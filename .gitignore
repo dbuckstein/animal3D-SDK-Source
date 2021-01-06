@@ -1,3 +1,44 @@
+# git ignore filter
+*.hg*
+*.merge*
+*.orig
+*.resolve
+*.BASE.txt
+*.LOCAL.txt
+*.REMOTE.txt
+bin*/
+lib*/
+gen*/
+build*/
+[dD]ebug*/
+[rR]elease*/
+ipch/
+.vs/
+*.DS_Store
+*.ipch
+*.db
+*.opendb
+*.sdf
+*.opensdf
+*.ncb
+*.suo
+*.aps
+*.apk
+*.ap_
+*.dex
+*.class
+*.classpath
+*.project
+*.idea
+*.gradle
+*.tmp
+
+# user settings
+#_SLN/
+#_WORKSPACE/
+#xcuserdata/
+#*.user
+
 # Prerequisites
 *.d
 
