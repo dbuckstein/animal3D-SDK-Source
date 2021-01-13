@@ -18,43 +18,36 @@
 	animal3D SDK: Minimal 3D Animation Framework
 	By Daniel S. Buckstein
 	
-	animal3D.h
-	Include all animal3D SDK header files.
+	a3_ProceduralGeometry.inl
+	Inline definitions for procedural geometry generation.
 
 	**DO NOT MODIFY THIS FILE**
 */
 
-
-#ifndef __ANIMAL3D_H
-#define __ANIMAL3D_H
-
-
-//-----------------------------------------------------------------------------
-// A3: Utility includes.
-
-#include "animal3D/a3utility/a3_Stream.h"
-#include "animal3D/a3utility/a3_Timer.h"
-#include "animal3D/a3utility/a3_Thread.h"
+#ifdef __ANIMAL3D_PROCEDURALGEOMETRY_H
+#ifndef __ANIMAL3D_PROCEDURALGEOMETRY_INL
+#define __ANIMAL3D_PROCEDURALGEOMETRY_INL
 
 
 //-----------------------------------------------------------------------------
-// A3: Input includes.
 
-#include "animal3D/a3input/a3_InputState.h"
-#include "animal3D/a3input/a3_MouseInput.h"
-#include "animal3D/a3input/a3_KeyboardInput.h"
-#include "animal3D/a3input/a3_XboxControllerInput.h"
+A3_INLINE a3ret a3proceduralGetDescriptorFlags(const a3_ProceduralGeometryDescriptor *geom)
+{
+	if (geom && geom->shape)
+		return (geom->bParams[3] & 0x0f);
+	return -1;
+}
 
-
-//-----------------------------------------------------------------------------
-// A3: Pre-defined geometry includes.
-
-#include "animal3D/a3geometry/a3_GeometryData.h"
-#include "animal3D/a3geometry/a3_ProceduralGeometry.h"
-#include "animal3D/a3geometry/a3_ModelLoader_WavefrontOBJ.h"
+A3_INLINE a3ret a3proceduralGetDescriptorAxis(const a3_ProceduralGeometryDescriptor *geom)
+{
+	if (geom && geom->shape)
+		return (geom->bParams[3] & 0xf0) >> 4;
+	return -1;
+}
 
 
 //-----------------------------------------------------------------------------
 
 
-#endif	// !__ANIMAL3D_H
+#endif	// !__ANIMAL3D_PROCEDURALGEOMETRY_INL
+#endif	// __ANIMAL3D_PROCEDURALGEOMETRY_H

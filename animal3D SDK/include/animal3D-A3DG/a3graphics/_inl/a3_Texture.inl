@@ -18,43 +18,41 @@
 	animal3D SDK: Minimal 3D Animation Framework
 	By Daniel S. Buckstein
 	
-	animal3D.h
-	Include all animal3D SDK header files.
+	a3_Texture.inl
+	Inline definitions for OpenGL texture object.
 
 	**DO NOT MODIFY THIS FILE**
 */
 
-
-#ifndef __ANIMAL3D_H
-#define __ANIMAL3D_H
-
-
-//-----------------------------------------------------------------------------
-// A3: Utility includes.
-
-#include "animal3D/a3utility/a3_Stream.h"
-#include "animal3D/a3utility/a3_Timer.h"
-#include "animal3D/a3utility/a3_Thread.h"
+#ifdef __ANIMAL3D_TEXTURE_H
+#ifndef __ANIMAL3D_TEXTURE_INL
+#define __ANIMAL3D_TEXTURE_INL
 
 
 //-----------------------------------------------------------------------------
-// A3: Input includes.
 
-#include "animal3D/a3input/a3_InputState.h"
-#include "animal3D/a3input/a3_MouseInput.h"
-#include "animal3D/a3input/a3_KeyboardInput.h"
-#include "animal3D/a3input/a3_XboxControllerInput.h"
+A3_INLINE a3ret a3textureReference(a3_Texture *texture)
+{
+	if (texture)
+		return a3handleIncrementCount(texture->handle);
+	return -1;
+}
 
-
-//-----------------------------------------------------------------------------
-// A3: Pre-defined geometry includes.
-
-#include "animal3D/a3geometry/a3_GeometryData.h"
-#include "animal3D/a3geometry/a3_ProceduralGeometry.h"
-#include "animal3D/a3geometry/a3_ModelLoader_WavefrontOBJ.h"
+A3_INLINE a3ret a3textureRelease(a3_Texture *texture)
+{
+	if (texture)
+	{
+		a3i32 ret = a3handleDecrementCount(texture->handle);
+		if (ret == 0)
+			texture->width = texture->height = texture->channels = texture->bytes = texture->internalFormat = texture->internalType = 0;
+		return ret;
+	}
+	return -1;
+}
 
 
 //-----------------------------------------------------------------------------
 
 
-#endif	// !__ANIMAL3D_H
+#endif	// !__ANIMAL3D_TEXTURE_INL
+#endif	// __ANIMAL3D_TEXTURE_H

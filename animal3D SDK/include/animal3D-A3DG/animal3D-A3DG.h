@@ -18,43 +18,35 @@
 	animal3D SDK: Minimal 3D Animation Framework
 	By Daniel S. Buckstein
 	
-	animal3D.h
-	Include all animal3D SDK header files.
+	animal3D-A3DG.h
+	Include all animal3D graphics header files.
 
 	**DO NOT MODIFY THIS FILE**
 */
 
 
-#ifndef __ANIMAL3D_H
-#define __ANIMAL3D_H
+#ifndef __ANIMAL3D_A3DG_H
+#define __ANIMAL3D_A3DG_H
 
 
 //-----------------------------------------------------------------------------
-// A3: Utility includes.
+// A3: Graphics includes.
 
-#include "animal3D/a3utility/a3_Stream.h"
-#include "animal3D/a3utility/a3_Timer.h"
-#include "animal3D/a3utility/a3_Thread.h"
-
-
-//-----------------------------------------------------------------------------
-// A3: Input includes.
-
-#include "animal3D/a3input/a3_InputState.h"
-#include "animal3D/a3input/a3_MouseInput.h"
-#include "animal3D/a3input/a3_KeyboardInput.h"
-#include "animal3D/a3input/a3_XboxControllerInput.h"
-
-
-//-----------------------------------------------------------------------------
-// A3: Pre-defined geometry includes.
-
-#include "animal3D/a3geometry/a3_GeometryData.h"
-#include "animal3D/a3geometry/a3_ProceduralGeometry.h"
-#include "animal3D/a3geometry/a3_ModelLoader_WavefrontOBJ.h"
+#include "animal3D-A3DG/a3graphics/a3_TextRenderer.h"
+#include "animal3D-A3DG/a3graphics/a3_GraphicsObjectHandle.h"
+#include "animal3D-A3DG/a3graphics/a3_Texture.h"
+#include "animal3D-A3DG/a3graphics/a3_TextureAtlas.h"
+#include "animal3D-A3DG/a3graphics/a3_Framebuffer.h"
+#include "animal3D-A3DG/a3graphics/a3_ShaderProgram.h"
+#include "animal3D-A3DG/a3graphics/a3_BufferObject.h"
+#include "animal3D-A3DG/a3graphics/a3_UniformBuffer.h"
+#include "animal3D-A3DG/a3graphics/a3_Material.h"
+#include "animal3D-A3DG/a3graphics/a3_VertexDescriptors.h"
+#include "animal3D-A3DG/a3graphics/a3_VertexBuffer.h"
+#include "animal3D-A3DG/a3graphics/a3_VertexDrawable.h"
 
 
 //-----------------------------------------------------------------------------
 
 
-#endif	// !__ANIMAL3D_H
+#endif	// !__ANIMAL3D_A3DG_H
