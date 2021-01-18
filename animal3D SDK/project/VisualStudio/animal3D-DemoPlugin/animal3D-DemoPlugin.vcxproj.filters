@@ -64,6 +64,24 @@
     <Filter Include="Header Files\A3_DEMO\_a3_demo_utilities">
       <UniqueIdentifier>{1d614140-0b1a-4cc2-9639-0e07353d4c02}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\A3_DEMO\_animation">
+      <UniqueIdentifier>{4957b083-10af-40c8-9163-0fcd0c1386ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\A3_DEMO\_a3_demo_utilities\_inl">
+      <UniqueIdentifier>{ea7f0414-e156-4804-b007-33b6502b72aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\common\A3_DEMO\_a3_demo_utilities">
+      <UniqueIdentifier>{34c0ecdc-5fec-4c79-9e23-f566a3250126}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\common\A3_DEMO\_animation">
+      <UniqueIdentifier>{62ab78f5-2ea3-4abf-a07f-90a34e69e634}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\A3_DEMO\_animation\_inl">
+      <UniqueIdentifier>{bdb95341-5739-4480-aecb-2fa62cb25469}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\common\A3_DEMO\a3_DemoMode0_Intro">
+      <UniqueIdentifier>{659f3cdc-34ef-43d7-b075-563437b21415}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="_src_win\main_dll.c">
@@ -87,6 +105,30 @@
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoState\a3_DemoState-load.c">
       <Filter>Source Files\common\A3_DEMO\a3_DemoState</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_a3_demo_utilities\_src\a3_DemoRenderUtils.c">
+      <Filter>Source Files\common\A3_DEMO\_a3_demo_utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_a3_demo_utilities\_src\a3_DemoSceneObject.c">
+      <Filter>Source Files\common\A3_DEMO\_a3_demo_utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_animation\_src\a3_Hierarchy.c">
+      <Filter>Source Files\common\A3_DEMO\_animation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode0_Intro\a3_DemoMode0_Intro-idle-input.c">
+      <Filter>Source Files\common\A3_DEMO\a3_DemoMode0_Intro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode0_Intro\a3_DemoMode0_Intro-idle-render.c">
+      <Filter>Source Files\common\A3_DEMO\a3_DemoMode0_Intro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode0_Intro\a3_DemoMode0_Intro-idle-update.c">
+      <Filter>Source Files\common\A3_DEMO\a3_DemoMode0_Intro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode0_Intro\a3_DemoMode0_Intro-load.c">
+      <Filter>Source Files\common\A3_DEMO\a3_DemoMode0_Intro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode0_Intro\a3_DemoMode0_Intro-unload.c">
+      <Filter>Source Files\common\A3_DEMO\a3_DemoMode0_Intro</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoState.h">
@@ -97,6 +139,21 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_a3_demo_utilities\a3_DemoMacros.h">
       <Filter>Header Files\A3_DEMO\_a3_demo_utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_a3_demo_utilities\a3_DemoRenderUtils.h">
+      <Filter>Header Files\A3_DEMO\_a3_demo_utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_a3_demo_utilities\a3_DemoSceneObject.h">
+      <Filter>Header Files\A3_DEMO\_a3_demo_utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_a3_demo_utilities\a3_DemoShaderProgram.h">
+      <Filter>Header Files\A3_DEMO\_a3_demo_utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_animation\a3_Hierarchy.h">
+      <Filter>Header Files\A3_DEMO\_animation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode0_Intro.h">
+      <Filter>Header Files\A3_DEMO</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -153,6 +210,12 @@
     </None>
     <None Include="..\..\..\resource\glsl\4x\gs\00-common\utilCommon_gs4x.glsl">
       <Filter>Resource Files\A3_DEMO\glsl\4x\gs\00-common</Filter>
+    </None>
+    <None Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_a3_demo_utilities\_inl\a3_DemoRenderUtils.inl">
+      <Filter>Header Files\A3_DEMO\_a3_demo_utilities\_inl</Filter>
+    </None>
+    <None Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_animation\_inl\a3_Hierarchy.inl">
+      <Filter>Header Files\A3_DEMO\_animation\_inl</Filter>
     </None>
   </ItemGroup>
 </Project>

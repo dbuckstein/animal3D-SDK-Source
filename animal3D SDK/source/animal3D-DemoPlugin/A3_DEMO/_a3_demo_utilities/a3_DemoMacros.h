@@ -1,5 +1,5 @@
 /*
-	Copyright 2011-2020 Daniel S. Buckstein
+	Copyright 2011-2021 Daniel S. Buckstein
 
 	Licensed under the Apache License, Version 2.0 (the "License");
 	you may not use this file except in compliance with the License.
@@ -49,6 +49,8 @@
 
 #define a3demoCtrlCasesLoop(value, maximum, ctrlInc, ctrlDec)			a3demoCtrlCaseIncLoop(value, maximum, ctrlInc);	a3demoCtrlCaseDecLoop(value, maximum, ctrlDec)
 #define a3demoCtrlCasesCap(value, maximum, minimum, ctrlInc, ctrlDec)	a3demoCtrlCaseIncCap(value, maximum, ctrlInc);	a3demoCtrlCaseDecCap(value, minimum, ctrlDec)
+
+#define a3demoArrayLen(arr)												(sizeof(arr) / sizeof(*arr))
 
 
 //-----------------------------------------------------------------------------
