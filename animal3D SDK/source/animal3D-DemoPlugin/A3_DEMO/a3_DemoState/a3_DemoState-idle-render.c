@@ -32,6 +32,8 @@
 
 #include "../a3_DemoState.h"
 
+#include "../_a3_demo_utilities/a3_DemoRenderUtils.h"
+
 
 // OpenGL
 #ifdef _WIN32
@@ -45,6 +47,11 @@
 
 //-----------------------------------------------------------------------------
 // RENDER TEXT
+
+void a3intro_render_controls(a3_DemoState const* demoState, a3_DemoMode0_Intro const* demoMode,
+	a3_TextRenderer const* text, a3vec4 const col,
+	a3f32 const textAlign, a3f32 const textDepth, a3f32 const textOffsetDelta, a3f32 textOffset);
+
 
 // display current mode controls
 void a3demo_render_controls_global(a3_DemoState const* demoState,
@@ -81,22 +88,25 @@ void a3demo_render_controls(a3_DemoState const* demoState,
 	a3f32 const textAlign, a3f32 const textDepth, a3f32 const textOffsetDelta, a3f32 textOffset)
 {
 	// display mode info
-	//a3byte const* modeText[demoState_mode_max] = {
-	//};
+	a3byte const* modeText[demoState_mode_max] = {
+		"STARTER SCENE",
+	};
 
 	// demo mode
 	a3_DemoState_ModeName const demoMode = demoState->demoMode;
 
 	// demo mode
-	//a3textDraw(text, textAlign, textOffset += textOffsetDelta, textDepth, col.r, col.g, col.b, col.a,
-	//	"Demo mode (%u / %u) ('</,' prev | next '>/.'): %s", demoMode + 1, demoState_mode_max, modeText[demoMode]);
+	a3textDraw(text, textAlign, textOffset += textOffsetDelta, textDepth, col.r, col.g, col.b, col.a,
+		"Demo mode (%u / %u) ('</,' prev | next '>/.'): %s", demoMode + 1, demoState_mode_max, modeText[demoMode]);
 
 	// draw controls for specific modes
-//	switch (demoMode)
-//	{
-//	default:
-//		break;
-//	}
+	switch (demoMode)
+	{
+	case demoState_modeIntro:
+		a3intro_render_controls(demoState, demoState->demoMode0,
+			text, col, textAlign, textDepth, textOffsetDelta, textOffset);
+		break;
+	}
 
 	// global/input-dependent controls
 	textOffset = -0.6f;
@@ -162,66 +172,41 @@ void a3demo_render_data(const a3_DemoState* demoState,
 
 
 //-----------------------------------------------------------------------------
-// RENDER UTILITIES
-
-// set graphics states (e.g. depth testing, blend mode, background color, etc.)
-void a3demo_setDefaultGraphicsState()
-{
-	const a3f32 lineWidth = 2.0f;
-	const a3f32 pointSize = 4.0f;
-
-	// lines and points
-	glLineWidth(lineWidth);
-	glPointSize(pointSize);
-
-	// backface culling
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
-
-	// textures
-	glEnable(GL_TEXTURE_2D);
-
-	// background
-	glClearColor(0.0f, 0.0f, 0.0, 0.0f);
-}
-
-
-//-----------------------------------------------------------------------------
 // RENDER
 
-// test render
-void a3demo_renderTest(a3_DemoState const* demoState, a3f64 const dt)
-{
-	// clear buffers
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	// set viewport
-	glViewport(-demoState->frameBorder, -demoState->frameBorder, demoState->frameWidth, demoState->frameHeight);
-
-	// ****TO-DO: render scene here
-
-}
-
-void a3demo_render(a3_DemoState const* demoState, a3f64 const dt)
+void a3demo_render(a3_DemoState* demoState, a3f64 const dt)
 {
 	// display mode for current pipeline
 	// ensures we don't go through the whole pipeline if not needed
 	a3_DemoState_ModeName const demoMode = demoState->demoMode;
 
-	//demoState->demoModeCallbacksPtr->handleRender(demoState,
-	//	demoState->demoModeCallbacksPtr->demoMode, dt);
 
-	a3demo_renderTest(demoState, dt);
+	// amount to offset text as each line is rendered
+	a3f32 const textAlign = -0.98f;
+	a3f32 const textDepth = -1.00f;
+	a3f32 const textOffsetDelta = -0.08f;
+	a3f32 textOffset = +1.00f;
+
+
+	// callback for current mode
+	demoState->demoModeCallbacksPtr = demoState->demoModeCallbacks + demoState->demoMode;
+	if (demoState->demoModeCallbacksPtr)
+	{
+		demoState->demoModeCallbacksPtr->handleRender(demoState,
+			demoState->demoModeCallbacksPtr->demoMode, dt);
+	}
+
+
+	// deactivate things
+	a3vertexDrawableDeactivate();
+	a3shaderProgramDeactivate();
+	a3framebufferDeactivateSetViewport(a3fbo_depthDisable, 0, 0, demoState->windowWidth, demoState->windowHeight);
+	a3textureDeactivate(a3tex_unit00);
+
 
 	// text
 	if (demoState->textInit)
 	{
-		// amount to offset text as each line is rendered
-		a3f32 const textAlign = -0.98f;
-		a3f32 const textDepth = -1.00f;
-		a3f32 const textOffsetDelta = -0.08f;
-		a3f32 textOffset = +1.00f;
-
 		// 5 passes of text to get decent visibility
 		a3_TextRenderer const* text = demoState->text;
 		a3vec4 const bg = a3vec4_w, fg = a3vec4_one;

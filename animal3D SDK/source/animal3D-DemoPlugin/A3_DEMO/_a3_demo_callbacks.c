@@ -33,6 +33,7 @@
 #include "a3_DemoState.h"
 
 #include "_a3_demo_utilities/a3_DemoMacros.h"
+#include "_a3_demo_utilities/a3_DemoRenderUtils.h"
 
 
 #include <stdio.h>
@@ -112,6 +113,13 @@ void a3demo_unloadValidate(a3_DemoState const* demoState);
 
 //-----------------------------------------------------------------------------
 
+void a3intro_load(a3_DemoState const* demoState, a3_DemoMode0_Intro* demoMode);
+
+void a3intro_loadValidate(a3_DemoState const* demoState, a3_DemoMode0_Intro* demoMode);
+
+void a3intro_unload(a3_DemoState const* demoState, a3_DemoMode0_Intro* demoMode);
+
+void a3intro_unloadValidate(a3_DemoState const* demoState, a3_DemoMode0_Intro* demoMode);
 
 
 //-----------------------------------------------------------------------------
@@ -144,17 +152,13 @@ inline void a3demo_releaseText(a3_DemoState* demoState)
 }
 
 
-// set default graphics state
-void a3demo_setDefaultGraphicsState();
-
-
 //-----------------------------------------------------------------------------
 
 void a3demo_load(a3_DemoState* demoState)
 {
 	// demo modes
-	//demoState->demoMode = demoState_mode_max;
-	//demoState->demoModeCallbacksPtr = demoState->demoModeCallbacks + demoState->demoMode;
+	demoState->demoModeCallbacksPtr = demoState->demoModeCallbacks + demoState->demoMode;
+	a3intro_load(demoState, demoState->demoMode0);
 
 
 	// geometry
@@ -186,17 +190,21 @@ void a3demo_unload(a3_DemoState* demoState)
 	a3demo_unloadShaders(demoState);
 	a3demo_unloadTextures(demoState);
 	a3demo_unloadFramebuffers(demoState);
+
+	demoState->demoModeCallbacksPtr = demoState->demoModeCallbacks + demoState->demoMode;
+	a3intro_unload(demoState, demoState->demoMode0);
 }
 
 void a3demoMode_loadValidate(a3_DemoState* demoState)
 {
-	//demoState->demoModeCallbacksPtr = demoState->demoModeCallbacks + demoState->demoMode;
-
+	demoState->demoModeCallbacksPtr = demoState->demoModeCallbacks + demoState->demoMode;
+	a3intro_loadValidate(demoState, demoState->demoMode0);
 }
 
 void a3demoMode_unloadValidate(a3_DemoState* demoState)
 {
-
+	demoState->demoModeCallbacksPtr = demoState->demoModeCallbacks + demoState->demoMode;
+	a3intro_unloadValidate(demoState, demoState->demoMode0);
 }
 
 void a3demo_idle(a3_DemoState* demoState, a3f64 const dt)
@@ -222,7 +230,8 @@ void a3demo_idle(a3_DemoState* demoState, a3f64 const dt)
 	a3demo_update(demoState, dt);
 	a3demo_render(demoState, dt);
 
-	// update input
+	// update input (reset wheel)
+	a3mouseSetStateWheel(demoState->mouse, a3mws_neutral);
 	a3mouseUpdate(demoState->mouse);
 	a3keyboardUpdate(demoState->keyboard);
 	a3XboxControlUpdate(demoState->xcontrol);
@@ -315,6 +324,7 @@ A3DYLIBSYMBOL a3_DemoState *a3demoCB_load(a3_DemoState *demoState, a3boolean hot
 		a3demo_setDefaultGraphicsState();
 
 		// demo modes
+		demoState->demoMode = demoState_modeIntro;
 		a3demoMode_loadValidate(demoState);
 		a3demo_load(demoState);
 
@@ -451,6 +461,9 @@ A3DYLIBSYMBOL void a3demoCB_windowResize(a3_DemoState *demoState, a3i32 newWindo
 	//	since they are likely dependent on the window size
 	a3demo_unloadFramebuffers(demoState);
 	a3demo_loadFramebuffers(demoState);
+
+	// use framebuffer deactivate utility to set viewport
+	a3framebufferDeactivateSetViewport(a3fbo_depthDisable, -frameBorder, -frameBorder, demoState->frameWidth, demoState->frameHeight);
 
 	// viewing info for projection matrix
 	a3demoMode_loadValidate(demoState);
