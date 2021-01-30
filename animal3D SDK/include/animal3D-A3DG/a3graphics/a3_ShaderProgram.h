@@ -1,5 +1,5 @@
 /*
-	Copyright 2011-2020 Daniel S. Buckstein
+	Copyright 2011-2021 Daniel S. Buckstein
 
 	Licensed under the Apache License, Version 2.0 (the "License");
 	you may not use this file except in compliance with the License.
@@ -279,6 +279,50 @@ extern "C"
 	//	return: 1 if success
 	//	return: -1 if invalid params
 	a3ret a3shaderProgramHandleUpdateReleaseCallback(a3_ShaderProgram *program);
+
+	// A3: Get image unit count limit.
+	//	return: image unit count limit
+	a3ret a3shaderProgramGetMaxImageUnits();
+
+
+//-----------------------------------------------------------------------------
+	// compute shader support
+
+	// A3: Dispatch compute shader attached to program if there is one.
+	//	param program: non-null pointer to shader program whose compute shader
+	//		to dispatch (if one is attached)
+	//	params workgroupsX, workgroupsY, workgroupsZ: number of workgroups to 
+	//		dispatch in each dimension; must be greater than zero and the 
+	//		minimum limit for each is 65535
+	//	return: 1 if compute shader dispatched
+	//	return: 0 if compute shader not attached
+	//	return: -1 if invalid params
+	a3ret a3shaderProgramComputeDispatch(const a3_ShaderProgram* program, const a3ui32 workgroupsX, const a3ui32 workgroupsY, const a3ui32 workgroupsZ);
+
+	// A3: Get compute workgroup count limit on one dimension; the minimum 
+	//		limit on each dimension is 65535.
+	//	param dimension: 0, 1 or 2 for X, Y or Z
+	//	return: workgroup count limit on specified dimension
+	a3ret a3shaderProgramComputeGetMaxWorkgroupCount(const a3ui16 dimension);
+
+	// A3: Get compute workgroup size limit on one dimension; the minimum limits 
+	//		are 1024 for X, 1024 for Y and 64 for Z.
+	//	param dimension: 0, 1 or 2 for X, Y or Z
+	//	return: workgroup size limit on specified dimension
+	a3ret a3shaderProgramComputeGetMaxWorkgroupSize(const a3ui16 dimension);
+
+	// A3: Get compute workgroup invocation limit; the minimum limit is 1024 
+	//		(shared all on dimensions).
+	//	return: workgroup invocation limit
+	a3ret a3shaderProgramComputeGetMaxWorkgroupInvocations();
+
+	// A3: Get compute shared memory limit; minimum specified value is 32kb.
+	//	return: shared memory limit
+	a3ret a3shaderProgramComputeGetMaxSharedMemory();
+
+	// A3: Get compute image uniform count limit.
+	//	return: image uniform count limit
+	a3ret a3shaderProgramComputeGetMaxImageUniforms();
 
 
 //-----------------------------------------------------------------------------
