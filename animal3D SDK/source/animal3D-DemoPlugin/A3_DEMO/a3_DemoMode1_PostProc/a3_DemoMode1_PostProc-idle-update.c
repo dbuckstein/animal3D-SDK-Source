@@ -18,7 +18,7 @@
 	animal3D SDK: Minimal 3D Animation Framework
 	By Daniel S. Buckstein
 	
-	a3_DemoMode0_Intro-idle-update.c
+	a3_DemoMode1_PostProc-idle-update.c
 	Demo mode implementations: animation scene.
 
 	********************************************
@@ -28,7 +28,7 @@
 
 //-----------------------------------------------------------------------------
 
-#include "../a3_DemoMode0_Intro.h"
+#include "../a3_DemoMode1_PostProc.h"
 
 //typedef struct a3_DemoState a3_DemoState;
 #include "../a3_DemoState.h"
@@ -39,27 +39,54 @@
 //-----------------------------------------------------------------------------
 // UPDATE
 
-void a3intro_update_graphics(a3_DemoState* demoState, a3_DemoMode0_Intro* demoMode)
+void a3postproc_update_graphics(a3_DemoState* demoState, a3_DemoMode1_PostProc* demoMode)
 {
-	// ****LATER: 
-	// upload
-
+	// ****TO-DO:
+	//	-> uncomment uniform data upload
+	//	-> upload model and light data to respective uniform buffers
+	//		(hint: projectors and models are together)
+/*	// upload
+	a3bufferRefillOffset(demoState->ubo_transform, 0, 0, sizeof(demoMode->projectorMatrixStack), demoMode->projectorMatrixStack);
+	//...*/
 }
 
-void a3intro_update_scene(a3_DemoState* demoState, a3_DemoMode0_Intro* demoMode, a3f64 const dt)
+void a3postproc_update_scene(a3_DemoState* demoState, a3_DemoMode1_PostProc* demoMode, a3f64 const dt)
 {
 	void a3demo_update_defaultAnimation(a3f64 const dt, a3_SceneObjectComponent const* sceneObjectArray,
 		a3ui32 const count, a3ui32 const axis, a3boolean const updateAnimation);
 	void a3demo_update_bindSkybox(a3_SceneObjectComponent const* sceneObject_skybox,
 		a3_ProjectorComponent const* projector_active);
 
+	const a3mat4 bias = {
+		0.5f, 0.0f, 0.0f, 0.0f,
+		0.0f, 0.5f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.5f, 0.0f,
+		0.5f, 0.5f, 0.5f, 1.0f
+	}, biasInv = {
+		2.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 2.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 2.0f, 0.0f,
+		-1.0f, -1.0f, -1.0f, 1.0f
+	};
+
 	a3_ProjectorComponent* projector = demoMode->proj_camera_main;
+
+	a3_PointLightData* pointLightData;
+	a3ui32 i;
 
 	// update camera
 	a3demo_updateSceneObject(demoMode->obj_camera_main, 1);
 	a3demo_updateSceneObjectStack(demoMode->obj_camera_main, projector);
 	a3demo_updateProjector(projector);
 	a3demo_updateProjectorViewMats(projector);
+	a3demo_updateProjectorBiasMats(projector, bias, biasInv);
+
+	// update light
+	a3demo_updateSceneObject(demoMode->obj_light_main, 1);
+	a3demo_updateSceneObjectStack(demoMode->obj_light_main, projector);
+	a3demo_updateProjector(demoMode->proj_light_main);
+	a3demo_updateProjectorViewMats(demoMode->proj_light_main);
+	a3demo_updateProjectorBiasMats(demoMode->proj_light_main, bias, biasInv);
 
 	// update skybox
 	a3demo_updateSceneObject(demoMode->obj_skybox, 0);
@@ -90,15 +117,25 @@ void a3intro_update_scene(a3_DemoState* demoState, a3_DemoMode0_Intro* demoMode,
 
 	a3demo_updateSceneObject(demoMode->obj_ground, 0);
 	a3demo_updateSceneObjectStack(demoMode->obj_ground, projector);
+
+	// update light positions
+	for (i = 0, pointLightData = demoMode->pointLightData;
+		i < postprocMaxCount_pointLight;
+		++i, ++pointLightData)
+	{
+		a3real4Real4x4Product(pointLightData->position.v,
+			projector->sceneObjectPtr->modelMatrixStackPtr->modelMatInverse.m,
+			pointLightData->worldPos.v);
+	}
 }
 
-void a3intro_update(a3_DemoState* demoState, a3_DemoMode0_Intro* demoMode, a3f64 const dt)
+void a3postproc_update(a3_DemoState* demoState, a3_DemoMode1_PostProc* demoMode, a3f64 const dt)
 {
 	// update scene objects and related data
-	a3intro_update_scene(demoState, demoMode, dt);
+	a3postproc_update_scene(demoState, demoMode, dt);
 
 	// prepare and upload graphics data
-	a3intro_update_graphics(demoState, demoMode);
+	a3postproc_update_graphics(demoState, demoMode);
 }
 
 

@@ -114,12 +114,16 @@ void a3demo_unloadValidate(a3_DemoState const* demoState);
 //-----------------------------------------------------------------------------
 
 void a3intro_load(a3_DemoState const* demoState, a3_DemoMode0_Intro* demoMode);
+void a3postproc_load(a3_DemoState const* demoState, a3_DemoMode1_PostProc* demoMode);
 
 void a3intro_loadValidate(a3_DemoState const* demoState, a3_DemoMode0_Intro* demoMode);
+void a3postproc_loadValidate(a3_DemoState const* demoState, a3_DemoMode1_PostProc* demoMode);
 
 void a3intro_unload(a3_DemoState const* demoState, a3_DemoMode0_Intro* demoMode);
+void a3postproc_unload(a3_DemoState const* demoState, a3_DemoMode1_PostProc* demoMode);
 
 void a3intro_unloadValidate(a3_DemoState const* demoState, a3_DemoMode0_Intro* demoMode);
+void a3postproc_unloadValidate(a3_DemoState const* demoState, a3_DemoMode1_PostProc* demoMode);
 
 
 //-----------------------------------------------------------------------------
@@ -159,6 +163,7 @@ void a3demo_load(a3_DemoState* demoState)
 	// demo modes
 	demoState->demoModeCallbacksPtr = demoState->demoModeCallbacks + demoState->demoMode;
 	a3intro_load(demoState, demoState->demoMode0);
+	a3postproc_load(demoState, demoState->demoMode1);
 
 
 	// geometry
@@ -193,18 +198,21 @@ void a3demo_unload(a3_DemoState* demoState)
 
 	demoState->demoModeCallbacksPtr = demoState->demoModeCallbacks + demoState->demoMode;
 	a3intro_unload(demoState, demoState->demoMode0);
+	a3postproc_unload(demoState, demoState->demoMode1);
 }
 
 void a3demoMode_loadValidate(a3_DemoState* demoState)
 {
 	demoState->demoModeCallbacksPtr = demoState->demoModeCallbacks + demoState->demoMode;
 	a3intro_loadValidate(demoState, demoState->demoMode0);
+	a3postproc_loadValidate(demoState, demoState->demoMode1);
 }
 
 void a3demoMode_unloadValidate(a3_DemoState* demoState)
 {
 	demoState->demoModeCallbacksPtr = demoState->demoModeCallbacks + demoState->demoMode;
 	a3intro_unloadValidate(demoState, demoState->demoMode0);
+	a3postproc_unloadValidate(demoState, demoState->demoMode1);
 }
 
 void a3demo_idle(a3_DemoState* demoState, a3f64 const dt)
@@ -324,7 +332,7 @@ A3DYLIBSYMBOL a3_DemoState *a3demoCB_load(a3_DemoState *demoState, a3boolean hot
 		a3demo_setDefaultGraphicsState();
 
 		// demo modes
-		demoState->demoMode = demoState_modeIntro;
+		demoState->demoMode = demoState_modePostProc;
 		a3demoMode_loadValidate(demoState);
 		a3demo_load(demoState);
 
@@ -438,7 +446,7 @@ A3DYLIBSYMBOL void a3demoCB_windowMove(a3_DemoState *demoState, a3i32 newWindowP
 A3DYLIBSYMBOL void a3demoCB_windowResize(a3_DemoState *demoState, a3i32 newWindowWidth, a3i32 newWindowHeight)
 {
 	// account for borders here
-	const a3i32 frameBorder = 0;
+	const a3i32 frameBorder = 64;
 	const a3ui32 frameWidth = newWindowWidth + frameBorder + frameBorder;
 	const a3ui32 frameHeight = newWindowHeight + frameBorder + frameBorder;
 	const a3real windowAspect = (a3real)newWindowWidth / (a3real)newWindowHeight;
