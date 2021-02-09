@@ -44,6 +44,7 @@
 #include "_a3_demo_utilities/a3_DemoShaderProgram.h"
 
 #include "a3_DemoMode0_Intro.h"
+#include "a3_DemoMode1_PostProc.h"
 
 
 //-----------------------------------------------------------------------------
@@ -65,6 +66,7 @@ typedef enum	a3_DemoState_TextDisplayName	a3_DemoState_TextDisplayName;
 enum a3_DemoState_ModeName
 {
 	demoState_modeIntro,			// starter scene
+	demoState_modePostProc,			// post-processing scene
 
 	demoState_mode_max
 };
@@ -94,9 +96,12 @@ enum a3_DemoState_ObjectMaxCount
 	demoStateMaxCount_vertexArray = 4,
 	demoStateMaxCount_drawable = 16,
 
-	demoStateMaxCount_shaderProgram = 16,
+	demoStateMaxCount_shaderProgram = 32,
+	demoStateMaxCount_uniformBuffer = 8,
 
-	demoStateMaxCount_texture = 8,
+	demoStateMaxCount_texture = 32,
+
+	demoStateMaxCount_framebuffer = 16,
 };
 
 	
@@ -162,6 +167,7 @@ struct a3_DemoState
 
 	// demo modes
 	a3_DemoMode0_Intro demoMode0[1];
+	a3_DemoMode1_PostProc demoMode1[1];
 	a3_DemoState_ModeName demoMode;
 	a3_DemoModeCallbacks demoModeCallbacks[demoState_mode_max];
 	a3_DemoModeCallbacks const* demoModeCallbacksPtr;
@@ -193,20 +199,16 @@ struct a3_DemoState
 	};
 
 
-	// ****TO-DO:
-	//	-> uncomment buffers union
-/*	// draw data buffers
+	// draw data buffers
 	union {
 		a3_VertexBuffer drawDataBuffer[demoStateMaxCount_drawDataBuffer];
 		struct {
 			a3_VertexBuffer
 				vbo_staticSceneObjectDrawBuffer[1];			// buffer to hold all data for static scene objects (e.g. grid)
 		};
-	};*/
+	};
 
-	// ****TO-DO:
-	//	-> uncomment vertex arrays union
-/*	// vertex array objects
+	// vertex array objects
 	union {
 		a3_VertexArrayDescriptor vertexArray[demoStateMaxCount_vertexArray];
 		struct {
@@ -217,11 +219,9 @@ struct a3_DemoState
 				vao_position_color[1],						// VAO for vertex format with position and color
 				vao_position[1];							// VAO for vertex format with only position
 		};
-	};*/
+	};
 
-	// ****TO-DO:
-	//	-> uncomment drawables union
-/*	// drawables
+	// drawables
 	union {
 		a3_VertexDrawable drawable[demoStateMaxCount_drawable];
 		struct {
@@ -239,12 +239,10 @@ struct a3_DemoState
 			a3_VertexDrawable
 				draw_teapot[1];								// can't not have a Utah teapot
 		};
-	};*/
+	};
 
 
-	// ****TO-DO:
-	//	-> uncomment shader programs union
-/*	// shader programs and uniforms
+	// shader programs and uniforms
 	union {
 		a3_DemoStateShaderProgram shaderProgram[demoStateMaxCount_shaderProgram];
 		struct {
@@ -266,23 +264,67 @@ struct a3_DemoState
 			a3_DemoStateShaderProgram
 				prog_drawTangentBasis_instanced[1],			// draw vertex/face tangent bases and wireframe with instancing
 				prog_drawTangentBasis[1];					// draw vertex/face tangent bases and wireframe
+			a3_DemoStateShaderProgram
+				prog_postBright[1],							// post-processing bright pass (e.g. luminance)
+				prog_postBlur[1],							// post-processing blur pass (e.g. Gaussian)
+				prog_postBlend[1],							// post-processing blend pass (e.g. screen)
+				prog_drawPhong_shadow_instanced[1],			// draw Phong shading model with shadow map, instanced
+				prog_drawPhong_shadow[1];					// draw Phong shading model with shadow map
 		};
-	};*/
+	};
+
+	// uniform buffers
+	union {
+		a3_UniformBuffer uniformBuffer[demoStateMaxCount_uniformBuffer];
+		struct {
+			a3_UniformBuffer
+				ubo_light[1],								// uniform buffer for light data
+				ubo_transform[1];							// uniform buffer for transformation data
+		};
+	};
 
 
-	// ****TO-DO:
-	//	-> uncomment textures union
-/*	// textures
+	// textures
 	union {
 		a3_Texture texture[demoStateMaxCount_texture];
 		struct {
 			a3_Texture
+				tex_earth_dm[1],
+				tex_earth_sm[1],
+				tex_earth_nm[1],
+				tex_earth_hm[1],
+				tex_mars_dm[1],
+				tex_mars_sm[1],
+				tex_mars_nm[1],
+				tex_mars_hm[1],
+				tex_stone_dm[1],
+				tex_stone_nm[1],
+				tex_stone_hm[1],
+				tex_sun_dm[1],
 				tex_skybox_clouds[1],
 				tex_skybox_water[1],
 				tex_ramp_dm[1],
 				tex_ramp_sm[1],
 				tex_testsprite[1],
 				tex_checker[1];
+		};
+	};
+
+
+	// ****TO-DO:
+	//	-> uncomment framebuffers
+/*	// framebuffers
+	union {
+		a3_Framebuffer framebuffer[demoStateMaxCount_framebuffer];
+		struct {
+			a3_Framebuffer
+				fbo_c16x4[4],			// set of 16-bit color buffers (4 targets)
+				fbo_c16_szHalf[3],		// set of half-screen-sized 16-bit color buffers
+				fbo_c16_szQuarter[3],	// set of quarter-screen-sized 16-bit color buffers
+				fbo_c16_szEighth[3],	// set of eighth-screen-sized 16-bit color buffers
+				fbo_c32f[1],			// 32-bit float color buffer
+				fbo_d32[1],				// 32-bit depth buffer
+				fbo_c16x4_d24s8[1];		// 16-bit color buffer (4 targets) and depth-stencil buffer (24/8)
 		};
 	};*/
 
