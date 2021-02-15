@@ -51,6 +51,9 @@
 void a3intro_render_controls(a3_DemoState const* demoState, a3_DemoMode0_Intro const* demoMode,
 	a3_TextRenderer const* text, a3vec4 const col,
 	a3f32 const textAlign, a3f32 const textDepth, a3f32 const textOffsetDelta, a3f32 textOffset);
+void a3postproc_render_controls(a3_DemoState const* demoState, a3_DemoMode1_PostProc const* demoMode,
+	a3_TextRenderer const* text, a3vec4 const col,
+	a3f32 const textAlign, a3f32 const textDepth, a3f32 const textOffsetDelta, a3f32 textOffset);
 
 
 // display current mode controls
@@ -90,6 +93,7 @@ void a3demo_render_controls(a3_DemoState const* demoState,
 	// display mode info
 	a3byte const* modeText[demoState_mode_max] = {
 		"STARTER SCENE",
+		"POST-PROCESSING SCENE",
 	};
 
 	// demo mode
@@ -104,6 +108,10 @@ void a3demo_render_controls(a3_DemoState const* demoState,
 	{
 	case demoState_modeIntro:
 		a3intro_render_controls(demoState, demoState->demoMode0,
+			text, col, textAlign, textDepth, textOffsetDelta, textOffset);
+		break;
+	case demoState_modePostProc:
+		a3postproc_render_controls(demoState, demoState->demoMode1,
 			text, col, textAlign, textDepth, textOffsetDelta, textOffset);
 		break;
 	}
