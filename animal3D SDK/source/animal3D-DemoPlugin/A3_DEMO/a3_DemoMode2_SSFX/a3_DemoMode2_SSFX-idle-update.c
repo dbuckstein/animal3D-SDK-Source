@@ -18,7 +18,7 @@
 	animal3D SDK: Minimal 3D Animation Framework
 	By Daniel S. Buckstein
 	
-	a3_DemoMode1_PostProc-idle-update.c
+	a3_DemoMode2_SSFX-idle-update.c
 	Demo mode implementations: animation scene.
 
 	********************************************
@@ -28,7 +28,7 @@
 
 //-----------------------------------------------------------------------------
 
-#include "../a3_DemoMode1_PostProc.h"
+#include "../a3_DemoMode2_SSFX.h"
 
 //typedef struct a3_DemoState a3_DemoState;
 #include "../a3_DemoState.h"
@@ -39,15 +39,19 @@
 //-----------------------------------------------------------------------------
 // UPDATE
 
-void a3postproc_update_graphics(a3_DemoState* demoState, a3_DemoMode1_PostProc* demoMode)
+void a3ssfx_update_graphics(a3_DemoState* demoState, a3_DemoMode2_SSFX* demoMode)
 {
-	// upload
-	a3bufferRefillOffset(demoState->ubo_transform, 0, 0, sizeof(demoMode->projectorMatrixStack), demoMode->projectorMatrixStack);
-	a3bufferRefillOffset(demoState->ubo_transform, 0, sizeof(demoMode->projectorMatrixStack), sizeof(demoMode->modelMatrixStack), demoMode->modelMatrixStack);
+	// ****TO-DO:
+	//	-> uncomment transformation and light data uploads
+	//	-> add line to upload light transformations
+	//		(hint: just individual matrices, see scene update)
+/*	// upload
+	a3bufferRefillOffset(demoState->ubo_transform, 0, 0, sizeof(demoMode->modelMatrixStack), demoMode->modelMatrixStack);
 	a3bufferRefillOffset(demoState->ubo_light, 0, 0, sizeof(demoMode->pointLightData), demoMode->pointLightData);
+	//...*/
 }
 
-void a3postproc_update_scene(a3_DemoState* demoState, a3_DemoMode1_PostProc* demoMode, a3f64 const dt)
+void a3ssfx_update_scene(a3_DemoState* demoState, a3_DemoMode2_SSFX* demoMode, a3f64 const dt)
 {
 	void a3demo_update_defaultAnimation(a3f64 const dt, a3_SceneObjectComponent const* sceneObjectArray,
 		a3ui32 const count, a3ui32 const axis, a3boolean const updateAnimation);
@@ -70,6 +74,8 @@ void a3postproc_update_scene(a3_DemoState* demoState, a3_DemoMode1_PostProc* dem
 
 	a3_PointLightData* pointLightData;
 	a3ui32 i;
+	a3mat4* pointLightMVP;
+	a3real const ratio = a3trigFaceToPointRatio(a3real_threesixty, a3real_oneeighty, 32, 24);
 
 	// update camera
 	a3demo_updateSceneObject(demoMode->obj_camera_main, 1);
@@ -77,13 +83,6 @@ void a3postproc_update_scene(a3_DemoState* demoState, a3_DemoMode1_PostProc* dem
 	a3demo_updateProjector(projector);
 	a3demo_updateProjectorViewMats(projector);
 	a3demo_updateProjectorBiasMats(projector, bias, biasInv);
-
-	// update light
-	a3demo_updateSceneObject(demoMode->obj_light_main, 1);
-	a3demo_updateSceneObjectStack(demoMode->obj_light_main, projector);
-	a3demo_updateProjector(demoMode->proj_light_main);
-	a3demo_updateProjectorViewMats(demoMode->proj_light_main);
-	a3demo_updateProjectorBiasMats(demoMode->proj_light_main, bias, biasInv);
 
 	// update skybox
 	a3demo_updateSceneObject(demoMode->obj_skybox, 0);
@@ -115,24 +114,32 @@ void a3postproc_update_scene(a3_DemoState* demoState, a3_DemoMode1_PostProc* dem
 	a3demo_updateSceneObject(demoMode->obj_ground, 0);
 	a3demo_updateSceneObjectStack(demoMode->obj_ground, projector);
 
-	// update light positions
-	for (i = 0, pointLightData = demoMode->pointLightData;
-		i < postprocMaxCount_pointLight;
-		++i, ++pointLightData)
+	// update light positions and transforms
+	for (i = 0, pointLightData = demoMode->pointLightData, pointLightMVP = demoMode->pointLightMVP;
+		i < ssfxMaxCount_pointLight;
+		++i, ++pointLightData, ++pointLightMVP)
 	{
 		a3real4Real4x4Product(pointLightData->position.v,
 			projector->sceneObjectPtr->modelMatrixStackPtr->modelMatInverse.m,
 			pointLightData->worldPos.v);
+
+		// ****TO-DO:
+		//	-> calculate light transformation
+		//		(hint: in the previous line, we calculate the view-space position)
+		//		(hint: determine the scale part, append position and multiply by 
+		//			projection matrix to arrive at a proper MVP for each light)
+	/*	// update and transform light matrix
+		//...*/
 	}
 }
 
-void a3postproc_update(a3_DemoState* demoState, a3_DemoMode1_PostProc* demoMode, a3f64 const dt)
+void a3ssfx_update(a3_DemoState* demoState, a3_DemoMode2_SSFX* demoMode, a3f64 const dt)
 {
 	// update scene objects and related data
-	a3postproc_update_scene(demoState, demoMode, dt);
+	a3ssfx_update_scene(demoState, demoMode, dt);
 
 	// prepare and upload graphics data
-	a3postproc_update_graphics(demoState, demoMode);
+	a3ssfx_update_graphics(demoState, demoMode);
 }
 
 

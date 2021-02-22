@@ -91,6 +91,15 @@
     <Filter Include="Resource Files\A3_DEMO\glsl\4x\vs\01-pipeline">
       <UniqueIdentifier>{619e5605-751b-423c-8dcc-11dd46336862}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\common\A3_DEMO\a3_DemoMode2_SSFX">
+      <UniqueIdentifier>{0cb0ddf7-8699-4062-bf30-a7859746070d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\A3_DEMO\glsl\4x\fs\02-pipeline-deferred">
+      <UniqueIdentifier>{d17e2fff-5327-4369-a6a9-5d172fee238e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\A3_DEMO\glsl\4x\vs\02-pipeline-deferred">
+      <UniqueIdentifier>{47d991af-a531-48a1-9ac6-3c4e519e0ede}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="_src_win\main_dll.c">
@@ -153,6 +162,21 @@
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode1_PostProc\a3_DemoMode1_PostProc-unload.c">
       <Filter>Source Files\common\A3_DEMO\a3_DemoMode1_PostProc</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode2_SSFX\a3_DemoMode2_SSFX-idle-input.c">
+      <Filter>Source Files\common\A3_DEMO\a3_DemoMode2_SSFX</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode2_SSFX\a3_DemoMode2_SSFX-idle-render.c">
+      <Filter>Source Files\common\A3_DEMO\a3_DemoMode2_SSFX</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode2_SSFX\a3_DemoMode2_SSFX-idle-update.c">
+      <Filter>Source Files\common\A3_DEMO\a3_DemoMode2_SSFX</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode2_SSFX\a3_DemoMode2_SSFX-load.c">
+      <Filter>Source Files\common\A3_DEMO\a3_DemoMode2_SSFX</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode2_SSFX\a3_DemoMode2_SSFX-unload.c">
+      <Filter>Source Files\common\A3_DEMO\a3_DemoMode2_SSFX</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoState.h">
@@ -180,6 +204,9 @@
       <Filter>Header Files\A3_DEMO</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode1_PostProc.h">
+      <Filter>Header Files\A3_DEMO</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode2_SSFX.h">
       <Filter>Header Files\A3_DEMO</Filter>
     </ClInclude>
   </ItemGroup>
@@ -261,6 +288,27 @@
     </None>
     <None Include="..\..\..\resource\glsl\4x\fs\01-pipeline\postBright_fs4x.glsl">
       <Filter>Resource Files\A3_DEMO\glsl\4x\fs\01-pipeline</Filter>
+    </None>
+    <None Include="..\..\..\resource\glsl\4x\vs\02-pipeline-deferred\passClipBiased_transform_instanced_vs4x.glsl">
+      <Filter>Resource Files\A3_DEMO\glsl\4x\vs\02-pipeline-deferred</Filter>
+    </None>
+    <None Include="..\..\..\resource\glsl\4x\vs\02-pipeline-deferred\passTangentBasis_ubo_transform_vs4x.glsl">
+      <Filter>Resource Files\A3_DEMO\glsl\4x\vs\02-pipeline-deferred</Filter>
+    </None>
+    <None Include="..\..\..\resource\glsl\4x\fs\02-pipeline-deferred\drawGBuffers_fs4x.glsl">
+      <Filter>Resource Files\A3_DEMO\glsl\4x\fs\02-pipeline-deferred</Filter>
+    </None>
+    <None Include="..\..\..\resource\glsl\4x\fs\02-pipeline-deferred\drawPhongNM_fs4x.glsl">
+      <Filter>Resource Files\A3_DEMO\glsl\4x\fs\02-pipeline-deferred</Filter>
+    </None>
+    <None Include="..\..\..\resource\glsl\4x\fs\02-pipeline-deferred\drawPhongPointLight_fs4x.glsl">
+      <Filter>Resource Files\A3_DEMO\glsl\4x\fs\02-pipeline-deferred</Filter>
+    </None>
+    <None Include="..\..\..\resource\glsl\4x\fs\02-pipeline-deferred\postDeferredLightingComposite_fs4x.glsl">
+      <Filter>Resource Files\A3_DEMO\glsl\4x\fs\02-pipeline-deferred</Filter>
+    </None>
+    <None Include="..\..\..\resource\glsl\4x\fs\02-pipeline-deferred\postDeferredShading_fs4x.glsl">
+      <Filter>Resource Files\A3_DEMO\glsl\4x\fs\02-pipeline-deferred</Filter>
     </None>
   </ItemGroup>
 </Project>

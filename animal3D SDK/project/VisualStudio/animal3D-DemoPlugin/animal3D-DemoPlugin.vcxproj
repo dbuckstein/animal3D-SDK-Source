@@ -204,6 +204,11 @@
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode1_PostProc\a3_DemoMode1_PostProc-idle-update.c" />
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode1_PostProc\a3_DemoMode1_PostProc-load.c" />
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode1_PostProc\a3_DemoMode1_PostProc-unload.c" />
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode2_SSFX\a3_DemoMode2_SSFX-idle-input.c" />
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode2_SSFX\a3_DemoMode2_SSFX-idle-render.c" />
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode2_SSFX\a3_DemoMode2_SSFX-idle-update.c" />
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode2_SSFX\a3_DemoMode2_SSFX-load.c" />
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode2_SSFX\a3_DemoMode2_SSFX-unload.c" />
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoState\a3_DemoState-idle-input.c" />
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoState\a3_DemoState-idle-render.c" />
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoState\a3_DemoState-idle-update.c" />
@@ -218,6 +223,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode0_Intro.h" />
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode1_PostProc.h" />
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode2_SSFX.h" />
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoState.h" />
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_a3_demo_utilities\a3_DemoMacros.h" />
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_a3_demo_utilities\a3_DemoRenderUtils.h" />
@@ -235,6 +241,11 @@
     <None Include="..\..\..\resource\glsl\4x\fs\01-pipeline\postBlend_fs4x.glsl" />
     <None Include="..\..\..\resource\glsl\4x\fs\01-pipeline\postBlur_fs4x.glsl" />
     <None Include="..\..\..\resource\glsl\4x\fs\01-pipeline\postBright_fs4x.glsl" />
+    <None Include="..\..\..\resource\glsl\4x\fs\02-pipeline-deferred\postDeferredShading_fs4x.glsl" />
+    <None Include="..\..\..\resource\glsl\4x\fs\02-pipeline-deferred\drawGBuffers_fs4x.glsl" />
+    <None Include="..\..\..\resource\glsl\4x\fs\02-pipeline-deferred\drawPhongNM_fs4x.glsl" />
+    <None Include="..\..\..\resource\glsl\4x\fs\02-pipeline-deferred\drawPhongPointLight_fs4x.glsl" />
+    <None Include="..\..\..\resource\glsl\4x\fs\02-pipeline-deferred\postDeferredLightingComposite_fs4x.glsl" />
     <None Include="..\..\..\resource\glsl\4x\fs\drawColorAttrib_fs4x.glsl" />
     <None Include="..\..\..\resource\glsl\4x\fs\drawColorUnif_fs4x.glsl" />
     <None Include="..\..\..\resource\glsl\4x\gs\00-common\drawTangentBasis_gs4x.glsl" />
@@ -246,6 +257,8 @@
     <None Include="..\..\..\resource\glsl\4x\vs\00-common\utilCommon_vs4x.glsl" />
     <None Include="..\..\..\resource\glsl\4x\vs\01-pipeline\passTangentBasis_shadowCoord_transform_instanced_vs4x.glsl" />
     <None Include="..\..\..\resource\glsl\4x\vs\01-pipeline\passTangentBasis_shadowCoord_transform_vs4x.glsl" />
+    <None Include="..\..\..\resource\glsl\4x\vs\02-pipeline-deferred\passClipBiased_transform_instanced_vs4x.glsl" />
+    <None Include="..\..\..\resource\glsl\4x\vs\02-pipeline-deferred\passTangentBasis_ubo_transform_vs4x.glsl" />
     <None Include="..\..\..\resource\glsl\4x\vs\passColor_transform_instanced_vs4x.glsl" />
     <None Include="..\..\..\resource\glsl\4x\vs\passColor_transform_vs4x.glsl" />
     <None Include="..\..\..\resource\glsl\4x\vs\passthru_transform_instanced_vs4x.glsl" />
