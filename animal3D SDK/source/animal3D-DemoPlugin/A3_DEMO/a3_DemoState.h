@@ -45,6 +45,7 @@
 
 #include "a3_DemoMode0_Intro.h"
 #include "a3_DemoMode1_PostProc.h"
+#include "a3_DemoMode2_SSFX.h"
 
 
 //-----------------------------------------------------------------------------
@@ -67,6 +68,7 @@ enum a3_DemoState_ModeName
 {
 	demoState_modeIntro,			// starter scene
 	demoState_modePostProc,			// post-processing scene
+	demoState_modeSSFX,				// screen-space effects scene
 
 	demoState_mode_max
 };
@@ -168,6 +170,7 @@ struct a3_DemoState
 	// demo modes
 	a3_DemoMode0_Intro demoMode0[1];
 	a3_DemoMode1_PostProc demoMode1[1];
+	a3_DemoMode2_SSFX demoMode2[1];
 	a3_DemoState_ModeName demoMode;
 	a3_DemoModeCallbacks demoModeCallbacks[demoState_mode_max];
 	a3_DemoModeCallbacks const* demoModeCallbacksPtr;
@@ -180,6 +183,9 @@ struct a3_DemoState
 	a3boolean updateAnimation;
 	a3boolean stencilTest;
 	a3boolean skipIntermediatePasses;
+
+	// atlas matrices
+	a3mat4 atlas_earth, atlas_mars, atlas_moon, atlas_marble, atlas_copper, atlas_stone, atlas_checker;
 
 
 	//-------------------------------------------------------------------------
@@ -270,6 +276,12 @@ struct a3_DemoState
 				prog_postBlend[1],							// post-processing blend pass (e.g. screen)
 				prog_drawPhong_shadow_instanced[1],			// draw Phong shading model with shadow map, instanced
 				prog_drawPhong_shadow[1];					// draw Phong shading model with shadow map
+			a3_DemoStateShaderProgram
+				prog_postDeferredLightingComposite[1],		// post-processed deferred lighting composite
+				prog_postDeferredShading[1],				// post-processed deferred shading
+				prog_drawPhongPointLight_instanced[1],		// draw Phong result for point light volume
+				prog_drawGBuffers[1],						// draw scene object G-buffers only
+				prog_drawPhongNM_ubo[1];					// draw Phong shading model with normal mapping, using UBOs
 		};
 	};
 
@@ -279,6 +291,7 @@ struct a3_DemoState
 		struct {
 			a3_UniformBuffer
 				ubo_light[1],								// uniform buffer for light data
+				ubo_mvp[1],									// uniform buffer for mvp matrices only
 				ubo_transform[1];							// uniform buffer for transformation data
 		};
 	};
@@ -301,6 +314,10 @@ struct a3_DemoState
 				tex_stone_nm[1],
 				tex_stone_hm[1],
 				tex_sun_dm[1],
+				tex_atlas_dm[1],
+				tex_atlas_sm[1],
+				tex_atlas_nm[1],
+				tex_atlas_hm[1],
 				tex_skybox_clouds[1],
 				tex_skybox_water[1],
 				tex_ramp_dm[1],
@@ -311,9 +328,7 @@ struct a3_DemoState
 	};
 
 
-	// ****TO-DO:
-	//	-> uncomment framebuffers
-/*	// framebuffers
+	// framebuffers
 	union {
 		a3_Framebuffer framebuffer[demoStateMaxCount_framebuffer];
 		struct {
@@ -326,7 +341,7 @@ struct a3_DemoState
 				fbo_d32[1],				// 32-bit depth buffer
 				fbo_c16x4_d24s8[1];		// 16-bit color buffer (4 targets) and depth-stencil buffer (24/8)
 		};
-	};*/
+	};
 
 
 	// managed objects, no touchie
