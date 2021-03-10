@@ -209,6 +209,11 @@
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode2_SSFX\a3_DemoMode2_SSFX-idle-update.c" />
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode2_SSFX\a3_DemoMode2_SSFX-load.c" />
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode2_SSFX\a3_DemoMode2_SSFX-unload.c" />
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode3_Curves\a3_DemoMode3_Curves-idle-input.c" />
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode3_Curves\a3_DemoMode3_Curves-idle-render.c" />
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode3_Curves\a3_DemoMode3_Curves-idle-update.c" />
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode3_Curves\a3_DemoMode3_Curves-load.c" />
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode3_Curves\a3_DemoMode3_Curves-unload.c" />
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoState\a3_DemoState-idle-input.c" />
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoState\a3_DemoState-idle-render.c" />
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoState\a3_DemoState-idle-update.c" />
@@ -224,6 +229,7 @@
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode0_Intro.h" />
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode1_PostProc.h" />
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode2_SSFX.h" />
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode3_Curves.h" />
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoState.h" />
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_a3_demo_utilities\a3_DemoMacros.h" />
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_a3_demo_utilities\a3_DemoRenderUtils.h" />
@@ -246,10 +252,15 @@
     <None Include="..\..\..\resource\glsl\4x\fs\02-pipeline-deferred\drawPhongNM_fs4x.glsl" />
     <None Include="..\..\..\resource\glsl\4x\fs\02-pipeline-deferred\drawPhongPointLight_fs4x.glsl" />
     <None Include="..\..\..\resource\glsl\4x\fs\02-pipeline-deferred\postDeferredLightingComposite_fs4x.glsl" />
+    <None Include="..\..\..\resource\glsl\4x\fs\03-lod\drawPhongPOM_fs4x.glsl" />
     <None Include="..\..\..\resource\glsl\4x\fs\drawColorAttrib_fs4x.glsl" />
     <None Include="..\..\..\resource\glsl\4x\fs\drawColorUnif_fs4x.glsl" />
     <None Include="..\..\..\resource\glsl\4x\gs\00-common\drawTangentBasis_gs4x.glsl" />
     <None Include="..\..\..\resource\glsl\4x\gs\00-common\utilCommon_gs4x.glsl" />
+    <None Include="..\..\..\resource\glsl\4x\ts\03-lod\passTangentBasis_displace_tes4x.glsl" />
+    <None Include="..\..\..\resource\glsl\4x\ts\03-lod\passColor_interp_tes4x.glsl" />
+    <None Include="..\..\..\resource\glsl\4x\ts\03-lod\tessIso_tcs4x.glsl" />
+    <None Include="..\..\..\resource\glsl\4x\ts\03-lod\tessTriTangentBasis_tcs4x.glsl" />
     <None Include="..\..\..\resource\glsl\4x\vs\00-common\passTangentBasis_transform_instanced_vs4x.glsl" />
     <None Include="..\..\..\resource\glsl\4x\vs\00-common\passTangentBasis_transform_vs4x.glsl" />
     <None Include="..\..\..\resource\glsl\4x\vs\00-common\passTexcoord_transform_instanced_vs4x.glsl" />
@@ -259,6 +270,7 @@
     <None Include="..\..\..\resource\glsl\4x\vs\01-pipeline\passTangentBasis_shadowCoord_transform_vs4x.glsl" />
     <None Include="..\..\..\resource\glsl\4x\vs\02-pipeline-deferred\passClipBiased_transform_instanced_vs4x.glsl" />
     <None Include="..\..\..\resource\glsl\4x\vs\02-pipeline-deferred\passTangentBasis_ubo_transform_vs4x.glsl" />
+    <None Include="..\..\..\resource\glsl\4x\vs\03-lod\empty_vs4x.glsl" />
     <None Include="..\..\..\resource\glsl\4x\vs\passColor_transform_instanced_vs4x.glsl" />
     <None Include="..\..\..\resource\glsl\4x\vs\passColor_transform_vs4x.glsl" />
     <None Include="..\..\..\resource\glsl\4x\vs\passthru_transform_instanced_vs4x.glsl" />

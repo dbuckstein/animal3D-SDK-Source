@@ -100,6 +100,17 @@ a3real4x4r a3demo_setAtlasTransform_internal(a3real4x4p m_out,
 }
 
 
+// initialize texture set
+inline void a3demo_initTextureSet(a3_Texture const* textureSet[4],
+	a3_Texture const* tex_dm, a3_Texture const* tex_sm, a3_Texture const* tex_nm, a3_Texture const* tex_hm)
+{
+	textureSet[0] = tex_dm;
+	textureSet[1] = tex_sm;
+	textureSet[2] = tex_nm;
+	textureSet[3] = tex_hm;
+}
+
+
 // initialize dummy drawable
 inline void a3demo_initDummyDrawable_internal(a3_DemoState *demoState)
 {
@@ -239,7 +250,7 @@ void a3demo_loadGeometry(a3_DemoState *demoState)
 		}
 
 		// other procedurally-generated objects
-		a3proceduralCreateDescriptorPlane(proceduralShapes + 0, a3geomFlag_tangents, a3geomAxis_default, 1.0f, 1.0f, 1, 1);
+		a3proceduralCreateDescriptorPlane(proceduralShapes + 0, a3geomFlag_tangents, a3geomAxis_default, 1.0f, 1.0f, 2, 2);
 		a3proceduralCreateDescriptorBox(proceduralShapes + 1, a3geomFlag_tangents, 1.0f, 1.0f, 1.0f, 1, 1, 1);
 		a3proceduralCreateDescriptorSphere(proceduralShapes + 2, a3geomFlag_tangents, a3geomAxis_default, 1.0f, 32, 24);
 		a3proceduralCreateDescriptorCylinder(proceduralShapes + 3, a3geomFlag_tangents, a3geomAxis_x, 1.0f, 1.0f, 32, 4, 4);
@@ -421,6 +432,18 @@ void a3demo_loadShaders(a3_DemoState *demoState)
 			a3_DemoStateShader
 				passTangentBasis_ubo_transform_vs[1],
 				passClipBiased_transform_instanced_vs[1];
+			// 03-lod
+			a3_DemoStateShader
+				empty_vs[1];
+
+			// tessellation shaders
+			// 03-lod
+			a3_DemoStateShader
+				tessIso_tcs[1],
+				tessTriTangentBasis_tcs[1];
+			a3_DemoStateShader
+				passColor_interp_tes[1],
+				passTangentBasis_displace_tes[1];
 
 			// geometry shaders
 			// 00-common
@@ -450,6 +473,9 @@ void a3demo_loadShaders(a3_DemoState *demoState)
 				drawPhongPointLight_fs[1],
 				drawGBuffers_fs[1],
 				drawPhongNM_fs[1];
+			// 03-lod
+			a3_DemoStateShader
+				drawPhongPOM_fs[1];
 		};
 	} shaderList = {
 		{
@@ -474,6 +500,15 @@ void a3demo_loadShaders(a3_DemoState *demoState)
 			// 02-pipeline-deferred
 			{ { { 0 },	"shdr-vs:pass-tb-ubo-trans",		a3shader_vertex  ,	1,{ A3_DEMO_VS"02-pipeline-deferred/e/passTangentBasis_ubo_transform_vs4x.glsl" } } },
 			{ { { 0 },	"shdr-vs:pass-clipb-trans-inst",	a3shader_vertex  ,	1,{ A3_DEMO_VS"02-pipeline-deferred/e/passClipBiased_transform_instanced_vs4x.glsl" } } },
+			// 03-lod
+			{ { { 0 },	"shdr-vs:empty",					a3shader_vertex  ,	1,{ A3_DEMO_VS"03-lod/e/empty_vs4x.glsl" } } },
+
+			// ts
+			// 03-lod
+			{ { { 0 },	"shdr-tcs:tess-line-curve",			a3shader_tessellationControl,		1,{ A3_DEMO_TS"03-lod/e/tessIso_tcs4x.glsl" } } },
+			{ { { 0 },	"shdr-tcs:tess-tri-lod",			a3shader_tessellationControl,		1,{ A3_DEMO_TS"03-lod/e/tessTriTangentBasis_tcs4x.glsl" } } },
+			{ { { 0 },	"shdr-tes:passthru-interp",			a3shader_tessellationEvaluation,	1,{ A3_DEMO_TS"03-lod/e/passColor_interp_tes4x.glsl" } } },
+			{ { { 0 },	"shdr-tes:pass-tb-disp",			a3shader_tessellationEvaluation,	1,{ A3_DEMO_TS"03-lod/e/passTangentBasis_displace_tes4x.glsl" } } },
 
 			// gs
 			// 00-common
@@ -504,6 +539,8 @@ void a3demo_loadShaders(a3_DemoState *demoState)
 																					A3_DEMO_FS"00-common/e/utilCommon_fs4x.glsl",} } },
 			{ { { 0 },	"shdr-fs:draw-gbuffers",			a3shader_fragment,	1,{ A3_DEMO_FS"02-pipeline-deferred/e/drawGBuffers_fs4x.glsl" } } },
 			{ { { 0 },	"shdr-fs:draw-Phong-nm",			a3shader_fragment,	2,{ A3_DEMO_FS"02-pipeline-deferred/e/drawPhongNM_fs4x.glsl",
+																					A3_DEMO_FS"00-common/e/utilCommon_fs4x.glsl",} } },
+			{ { { 0 },	"shdr-fs:draw-Phong-pom",			a3shader_fragment,	2,{ A3_DEMO_FS"03-lod/e/drawPhongPOM_fs4x.glsl",
 																					A3_DEMO_FS"00-common/e/utilCommon_fs4x.glsl",} } },
 		}
 	};
@@ -662,6 +699,41 @@ void a3demo_loadShaders(a3_DemoState *demoState)
 	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.passTexcoord_transform_vs->shader);
 	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.postDeferredLightingComposite_fs->shader);
 
+	// 03-lod programs: 
+	// Phong LOD
+	currentDemoProg = demoState->prog_drawPhongLOD;
+	a3shaderProgramCreate(currentDemoProg->program, "prog:draw-PhongLOD");
+	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.passTangentBasis_ubo_transform_vs->shader);
+	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.tessTriTangentBasis_tcs->shader);
+	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.passTangentBasis_displace_tes->shader);
+	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.drawPhongNM_fs->shader);
+	// Phong with parallax occlusion mapping
+	currentDemoProg = demoState->prog_drawPhongPOM;
+	a3shaderProgramCreate(currentDemoProg->program, "prog:draw-PhongPOM");
+	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.passTangentBasis_ubo_transform_vs->shader);
+	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.drawPhongPOM_fs->shader);
+	// tangent basis LOD
+	currentDemoProg = demoState->prog_drawTangentBasisPOM;
+	a3shaderProgramCreate(currentDemoProg->program, "prog:draw-tb-POM");
+	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.passTangentBasis_ubo_transform_vs->shader);
+	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.drawTangentBasis_gs->shader);
+	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.drawColorAttrib_fs->shader);
+	// tangent basis LOD
+	currentDemoProg = demoState->prog_drawTangentBasisLOD;
+	a3shaderProgramCreate(currentDemoProg->program, "prog:draw-tb-LOD");
+	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.passTangentBasis_ubo_transform_vs->shader);
+	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.tessTriTangentBasis_tcs->shader);
+	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.passTangentBasis_displace_tes->shader);
+	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.drawTangentBasis_gs->shader);
+	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.drawColorAttrib_fs->shader);
+	// curve
+	currentDemoProg = demoState->prog_drawCurvePath;
+	a3shaderProgramCreate(currentDemoProg->program, "prog:draw-curve");
+	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.empty_vs->shader);
+	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.tessIso_tcs->shader);
+	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.passColor_interp_tes->shader);
+	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.drawColorAttrib_fs->shader);
+
 
 	// activate a primitive for validation
 	// makes sure the specified geometry can draw using programs
@@ -712,6 +784,10 @@ void a3demo_loadShaders(a3_DemoState *demoState)
 		a3demo_setUniformDefaultMat4(currentDemoProg, uMVPB_other);
 		a3demo_setUniformDefaultMat4(currentDemoProg, uAtlas);
 
+		// common TS
+		a3demo_setUniformDefaultInteger(currentDemoProg, uLevelInner, defaultInt);
+		a3demo_setUniformDefaultInteger(currentDemoProg, uLevelOuter, defaultInt);
+
 		// common texture
 		a3demo_setUniformDefaultInteger(currentDemoProg, uTex_dm, defaultTexUnits + 0);
 		a3demo_setUniformDefaultInteger(currentDemoProg, uTex_sm, defaultTexUnits + 1);
@@ -749,6 +825,10 @@ void a3demo_loadShaders(a3_DemoState *demoState)
 		// lighting and shading uniform blocks
 		a3demo_setUniformDefaultBlock(currentDemoProg, ubMaterial, demoProg_blockMaterial);
 		a3demo_setUniformDefaultBlock(currentDemoProg, ubLight, demoProg_blockLight);
+
+		// curve editor uniform blocks
+		a3demo_setUniformDefaultBlock(currentDemoProg, ubHandle, demoProg_blockHandle);
+		a3demo_setUniformDefaultBlock(currentDemoProg, ubCurve, demoProg_blockCurve);
 	}
 
 
@@ -771,6 +851,7 @@ void a3demo_loadShaders(a3_DemoState *demoState)
 
 
 	// allocate uniform buffers
+	a3bufferCreate(demoState->ubo_curve, "ubo:curve", a3buffer_uniform, a3index_countMaxShort, 0);
 	a3bufferCreate(demoState->ubo_light, "ubo:light", a3buffer_uniform, a3index_countMaxShort, 0);
 	a3bufferCreate(demoState->ubo_mvp, "ubo:mvp", a3buffer_uniform, a3index_countMaxShort, 0);
 	a3bufferCreate(demoState->ubo_transform, "ubo:transform", a3buffer_uniform, a3index_countMaxShort, 0);
@@ -877,6 +958,14 @@ void a3demo_loadTextures(a3_DemoState* demoState)
 		a3textureChangeFilterMode(a3tex_filterLinear); // linear pixel blending
 		a3textureChangeRepeatMode(a3tex_repeatNormal, a3tex_repeatClamp); // repeat horizontal, clamp vertical
 	}
+	// stone
+	tex = demoState->tex_stone_dm;
+	for (i = 0; i < 3; ++i, ++tex)
+	{
+		a3textureActivate(tex, a3tex_unit00);
+		a3textureChangeFilterMode(a3tex_filterLinear); // linear pixel blending
+		a3textureChangeRepeatMode(a3tex_repeatNormal, a3tex_repeatNormal); // repeat both
+	}
 	// atlases & skyboxes
 	tex = demoState->tex_atlas_dm;
 	for (i = 0; i < 6; ++i, ++tex)
@@ -904,6 +993,12 @@ void a3demo_loadTextures(a3_DemoState* demoState)
 	a3demo_setAtlasTransform_internal(demoState->atlas_copper.m, w, h, 1056, 544, 512, 512, 8, 8);
 	a3demo_setAtlasTransform_internal(demoState->atlas_stone.m, w, h, 1600, 0, 256, 256, 8, 8);
 	a3demo_setAtlasTransform_internal(demoState->atlas_checker.m, w, h, 1888, 0, 128, 128, 8, 8);
+
+
+	// texture sets
+	a3demo_initTextureSet(demoState->texSet_earth, demoState->tex_earth_dm, demoState->tex_earth_sm, demoState->tex_earth_nm, demoState->tex_earth_hm);
+	a3demo_initTextureSet(demoState->texSet_mars, demoState->tex_mars_dm, demoState->tex_mars_sm, demoState->tex_mars_nm, demoState->tex_mars_hm);
+	a3demo_initTextureSet(demoState->texSet_stone, demoState->tex_stone_dm, demoState->tex_stone_dm, demoState->tex_stone_nm, demoState->tex_stone_hm);
 
 
 	// done

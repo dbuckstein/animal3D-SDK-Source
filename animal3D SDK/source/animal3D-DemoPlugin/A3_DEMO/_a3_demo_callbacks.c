@@ -116,18 +116,22 @@ void a3demo_unloadValidate(a3_DemoState const* demoState);
 void a3intro_load(a3_DemoState const* demoState, a3_DemoMode0_Intro* demoMode);
 void a3postproc_load(a3_DemoState const* demoState, a3_DemoMode1_PostProc* demoMode);
 void a3ssfx_load(a3_DemoState const* demoState, a3_DemoMode2_SSFX* demoMode);
+void a3curves_load(a3_DemoState const* demoState, a3_DemoMode3_Curves* demoMode);
 
 void a3intro_loadValidate(a3_DemoState const* demoState, a3_DemoMode0_Intro* demoMode);
 void a3postproc_loadValidate(a3_DemoState const* demoState, a3_DemoMode1_PostProc* demoMode);
 void a3ssfx_loadValidate(a3_DemoState const* demoState, a3_DemoMode2_SSFX* demoMode);
+void a3curves_loadValidate(a3_DemoState const* demoState, a3_DemoMode3_Curves* demoMode);
 
 void a3intro_unload(a3_DemoState const* demoState, a3_DemoMode0_Intro* demoMode);
 void a3postproc_unload(a3_DemoState const* demoState, a3_DemoMode1_PostProc* demoMode);
 void a3ssfx_unload(a3_DemoState const* demoState, a3_DemoMode2_SSFX* demoMode);
+void a3curves_unload(a3_DemoState const* demoState, a3_DemoMode3_Curves* demoMode);
 
 void a3intro_unloadValidate(a3_DemoState const* demoState, a3_DemoMode0_Intro* demoMode);
 void a3postproc_unloadValidate(a3_DemoState const* demoState, a3_DemoMode1_PostProc* demoMode);
 void a3ssfx_unloadValidate(a3_DemoState const* demoState, a3_DemoMode2_SSFX* demoMode);
+void a3curves_unloadValidate(a3_DemoState const* demoState, a3_DemoMode3_Curves* demoMode);
 
 
 //-----------------------------------------------------------------------------
@@ -178,9 +182,10 @@ void a3demo_load(a3_DemoState* demoState)
 	a3intro_load(demoState, demoState->demoMode0);
 	a3postproc_load(demoState, demoState->demoMode1);
 	a3ssfx_load(demoState, demoState->demoMode2);
+	a3curves_load(demoState, demoState->demoMode3);
 
 	// set flags
-	demoState->displayGrid = a3false;
+	demoState->displayGrid = a3true;
 	demoState->displayWorldAxes = a3false;
 	demoState->displayObjectAxes = a3false;
 	demoState->displayTangentBases = a3false;
@@ -203,6 +208,7 @@ void a3demo_unload(a3_DemoState* demoState)
 	a3intro_unload(demoState, demoState->demoMode0);
 	a3postproc_unload(demoState, demoState->demoMode1);
 	a3ssfx_unload(demoState, demoState->demoMode2);
+	a3curves_unload(demoState, demoState->demoMode3);
 }
 
 void a3demoMode_loadValidate(a3_DemoState* demoState)
@@ -211,6 +217,7 @@ void a3demoMode_loadValidate(a3_DemoState* demoState)
 	a3intro_loadValidate(demoState, demoState->demoMode0);
 	a3postproc_loadValidate(demoState, demoState->demoMode1);
 	a3ssfx_loadValidate(demoState, demoState->demoMode2);
+	a3curves_loadValidate(demoState, demoState->demoMode3);
 }
 
 void a3demoMode_unloadValidate(a3_DemoState* demoState)
@@ -219,6 +226,7 @@ void a3demoMode_unloadValidate(a3_DemoState* demoState)
 	a3intro_unloadValidate(demoState, demoState->demoMode0);
 	a3postproc_unloadValidate(demoState, demoState->demoMode1);
 	a3ssfx_unloadValidate(demoState, demoState->demoMode2);
+	a3curves_unloadValidate(demoState, demoState->demoMode3);
 }
 
 void a3demo_idle(a3_DemoState* demoState, a3f64 const dt)

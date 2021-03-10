@@ -52,6 +52,8 @@ enum a3_DemoStateShaderProgramBlock
 	demoProg_blockTransformBlend,
 	demoProg_blockMaterial,
 	demoProg_blockLight,
+	demoProg_blockHandle,
+	demoProg_blockCurve,
 };
 
 
@@ -74,6 +76,11 @@ struct a3_DemoStateShaderProgram
 			uMVPB,						// model-view-projection-bias transform (object -> biased clip)
 			uMVPB_other,				// model-view-projection-bias transform to other (object -> bias clip other)
 			uAtlas;						// atlas matrix for texture coordinates
+
+		a3i32
+			// common tessellation shader uniforms
+			uLevelInner,				// inner tessellation levels
+			uLevelOuter;				// outer tessellation levels
 
 		a3i32
 			// common general uniform handles
@@ -107,6 +114,10 @@ struct a3_DemoStateShaderProgram
 			// light uniform block handles
 			ubMaterial,			// generic material data
 			ubLight;			// generic light data
+		a3i32
+			// curve uniform block handles
+			ubHandle,			// generic handle data
+			ubCurve;			// generic curve data
 	};
 };
 

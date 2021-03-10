@@ -166,7 +166,7 @@ extern inline void a3demo_initPointLight(a3_PointLightComponent* pointLight, a3u
 	pointLight->sceneHierarchyIndex = sceneHierarchyIndex;
 	pointLight->pointLightIndex = pointLightIndex;
 	pointLight->dataPtr = pointLightDataArray + pointLightIndex;
-	pointLight->sceneObjectPtr = sceneObjectArray + pointLightIndex;
+	pointLight->sceneObjectPtr = sceneObjectArray + sceneHierarchyIndex;
 }
 
 
