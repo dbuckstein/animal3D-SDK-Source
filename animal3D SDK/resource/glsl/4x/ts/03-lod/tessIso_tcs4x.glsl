@@ -18,21 +18,13 @@
 	animal3D SDK: Minimal 3D Animation Framework
 	By Daniel S. Buckstein
 	
-	drawTangentBases_gs4x.glsl
-	Draw tangent bases of vertices and/or faces, and/or wireframe shapes, 
-		determined by flag passed to program.
+	tessIso_tcs4x.glsl
+	Basic tessellation control for isolines.
 */
 
 #version 450
 
-// (2 verts/axis * 3 axes/basis * (3 vertex bases + 1 face basis) + 4 to 8 wireframe verts = 28 to 32 verts)
-#define MAX_VERTICES 32
-
-layout (triangles) in;
-
-layout (line_strip, max_vertices = MAX_VERTICES) out;
-
-out vec4 vColor;
+layout (vertices = 2) out;
 
 void main()
 {
