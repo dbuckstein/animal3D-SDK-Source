@@ -18,7 +18,7 @@
 	animal3D SDK: Minimal 3D Animation Framework
 	By Daniel S. Buckstein
 
-	a3_DemoMode2_SSFX-idle-render.c
+	a3_DemoMode3_Curves-idle-render.c
 	Demo mode implementations: animation scene.
 
 	********************************************
@@ -28,7 +28,7 @@
 
 //-----------------------------------------------------------------------------
 
-#include "../a3_DemoMode2_SSFX.h"
+#include "../a3_DemoMode3_Curves.h"
 
 //typedef struct a3_DemoState a3_DemoState;
 #include "../a3_DemoState.h"
@@ -49,85 +49,104 @@
 //-----------------------------------------------------------------------------
 
 // controls for pipelines mode
-void a3ssfx_render_controls(a3_DemoState const* demoState, a3_DemoMode2_SSFX const* demoMode,
+void a3curves_render_controls(a3_DemoState const* demoState, a3_DemoMode3_Curves const* demoMode,
 	a3_TextRenderer const* text, a3vec4 const col,
 	a3f32 const textAlign, a3f32 const textDepth, a3f32 const textOffsetDelta, a3f32 textOffset)
 {
 	// forward pipeline names
-	a3byte const* renderModeName[ssfx_renderMode_max] = {
-		"Phong shading (forward shading)",
-		"Phong shading (deferred shading)",
-		"Phong shading (deferred light pre-pass)",
+	a3byte const* renderModeName[curves_renderMode_max] = {
+		"Phong, normal mapping",
+		"Phong, parallax occlusion mapping",
+		"Phong, level-of-detail",
+	};
+
+	// pipeline names
+	a3byte const* renderPipelineName[curves_renderPipe_max] = {
+		"Forward",
 	};
 
 	// render pass names
-	a3byte const* renderPassName[ssfx_renderPass_max] = {
-		"Scene/g-buffers",
-		"Light pre-pass",
-		"Composition",
-		"Bright pass (half)",
-		"Blur pass, 1st axis (half)",
-		"Blur pass, 2nd axis (half)",
-		"Bright pass (quarter)",
-		"Blur pass, 1st axis (quarter)",
-		"Blur pass, 2nd axis (quarter)",
-		"Bright pass (eighth)",
-		"Blur pass, 1st axis (eighth)",
-		"Blur pass, 2nd axis (eighth)",
-		"Final composite (bloom)",
+	a3byte const* renderPassName[curves_renderPass_max] = {
+		"Scene",
+		"Composite",
 	};
 
 	// render target names
-	a3byte const* renderTargetName_scene[ssfx_renderTargetScene_max] = {
-		"Color buffer 0 (color/texcoords)",
-		"Color buffer 1 (normals)",
-		"Color buffer 2 (diffuse sample)",
-		"Color buffer 3 (specular sample)",
+	a3byte const* renderTargetName_scene[curves_renderTargetScene_max] = {
+		"Color buffer 0 (final color)",
+		"Color buffer 1 (normals [opt])",
+		"Color buffer 2 (diffuse sample [opt])",
+		"Color buffer 3 (specular sample [opt])",
 		"Depth buffer",
 	};
-	a3byte const* renderTargetName_light[ssfx_renderTargetLight_max] = {
-		"Diffuse shading total",
-		"Specular shading total",
+	a3byte const* renderTargetName_post[curves_renderTargetPost_max] = {
+		"Color buffer 0 (final color)",
 	};
-	a3byte const* renderTargetName_post[ssfx_renderTargetPost_max] = {
-		"Color buffer",
-	};
-	a3byte const* const* renderTargetName[ssfx_renderPass_max] = {
+	a3byte const* const* renderTargetName[curves_renderPass_max] = {
 		renderTargetName_scene,
-		renderTargetName_light,
-		renderTargetName_post,
-		renderTargetName_post,
-		renderTargetName_post,
-		renderTargetName_post,
-		renderTargetName_post,
-		renderTargetName_post,
-		renderTargetName_post,
-		renderTargetName_post,
-		renderTargetName_post,
-		renderTargetName_post,
 		renderTargetName_post,
 	};
 
 	// modes
-	a3_DemoMode2_SSFX_RenderMode const renderMode = demoMode->renderMode;
-	a3_DemoMode2_SSFX_RenderPass const renderPass = demoMode->renderPass;
-	a3_DemoMode2_SSFX_RenderTarget const renderTarget = demoMode->renderTarget[renderPass],
+	a3_DemoMode3_Curves_RenderMode const renderMode = demoMode->renderMode;
+	a3_DemoMode3_Curves_RenderPass const renderPipeline = demoMode->renderPipeline;
+	a3_DemoMode3_Curves_RenderPass const renderPass = demoMode->renderPass;
+	a3_DemoMode3_Curves_RenderTarget const renderTarget = demoMode->renderTarget[renderPass],
 		renderTargetCount = demoMode->renderTargetCount[renderPass];
 
 	// lighting modes
 	a3textDraw(text, textAlign, textOffset += textOffsetDelta, textDepth, col.r, col.g, col.b, col.a,
-		"    Render mode (%u / %u) ('j' | 'k'): %s", renderMode + 1, ssfx_renderMode_max, renderModeName[renderMode]);
+		"    Render mode (%u / %u) ('j' | 'k'): %s", renderMode + 1, curves_renderMode_max, renderModeName[renderMode]);
 	a3textDraw(text, textAlign, textOffset += textOffsetDelta, textDepth, col.r, col.g, col.b, col.a,
-		"    Render pass (%u / %u) ('J' | 'K'): %s", renderPass + 1, ssfx_renderPass_max, renderPassName[renderPass]);
+		"    Render pipeline (%u / %u) ('G' | 'H'): %s", renderPipeline + 1, curves_renderPipe_max, renderPipelineName[renderPipeline]);
 	a3textDraw(text, textAlign, textOffset += textOffsetDelta, textDepth, col.r, col.g, col.b, col.a,
-		"        Render target (%u / %u) ('N' | 'M'): %s", renderTarget + 1, renderTargetCount, renderTargetName[renderPass][renderTarget]);
+		"        Render pass (%u / %u) ('J' | 'K'): %s", renderPass + 1, curves_renderPass_max, renderPassName[renderPass]);
+	a3textDraw(text, textAlign, textOffset += textOffsetDelta, textDepth, col.r, col.g, col.b, col.a,
+		"            Render target (%u / %u) ('N' | 'M'): %s", renderTarget + 1, renderTargetCount, renderTargetName[renderPass][renderTarget]);
 }
 
 
 //-----------------------------------------------------------------------------
 
+a3ret a3vertexDrawableRenderIsoPatches(a3ui32 const count)
+{
+	if (count)
+	{
+		// ****TO-DO: 
+		//	-> set patch vertices parameter for isolines
+		//	-> disable anything that would result in a VAO, VBO and/or IBO based render
+		//	-> invoke rendering enough vertices to cover all path segments
+		// force isoline patches
+
+		return 1;
+	}
+	return -1;
+}
+
+// draw as patches
+a3ret a3vertexDrawableRenderTriPatches(a3_VertexDrawable const* drawable)
+{
+	// triangle: use first 3 outer levels and only first inner
+	// https://www.khronos.org/opengl/wiki/Tessellation 
+	if (drawable)
+	{
+		// ****TO-DO: 
+		//	-> set patch vertices parameter for triangles
+		//	-> copy regular rendering algorithm
+		//	-> replace primitive type with "patches" keyword
+		// draw
+		
+		return 1;
+	}
+	return -1;
+}
+typedef a3ret(*a3_VertexDrawableRenderFunc)(a3_VertexDrawable const* drawable);
+
+
+//-----------------------------------------------------------------------------
+
 // sub-routine for rendering the demo state using the shading pipeline
-void a3ssfx_render(a3_DemoState const* demoState, a3_DemoMode2_SSFX const* demoMode, a3f64 const dt)
+void a3curves_render(a3_DemoState const* demoState, a3_DemoMode3_Curves const* demoMode, a3f64 const dt)
 {
 	// pointers
 	const a3_DemoStateShaderProgram* currentDemoProgram;
@@ -185,59 +204,92 @@ void a3ssfx_render(a3_DemoState const* demoState, a3_DemoMode2_SSFX const* demoM
 	const a3_SceneObjectComponent* currentSceneObject, * endSceneObject;
 
 	// temp drawable pointers
-	const a3_VertexDrawable* drawable[] = {
+	const a3_VertexDrawable* drawable[curvesMaxCount_sceneObject] = {
 		0,								// root
+		0,								// light
 		0,								// camera
+		0,								// curve
 		demoState->draw_unit_box,		// skybox
 		demoState->draw_unit_sphere,	// objects
-		demoState->draw_unit_cylinder,
-		demoState->draw_unit_capsule,
-		demoState->draw_unit_torus,
-		demoState->draw_unit_cone,
 		demoState->draw_teapot,
 		demoState->draw_unit_plane_z,
 	};
 
-	// forward pipeline shader programs
-	const a3_DemoStateShaderProgram* renderProgram[ssfx_renderMode_max] = {
-		demoState->prog_drawPhongNM_ubo,
-		demoState->prog_drawGBuffers,
-		demoState->prog_drawGBuffers,
+	// textures (diffuse, specular, normal, height)
+	const a3_Texture* const* textureSet[curvesMaxCount_sceneObject] = {
+		0, 0, 0, 0, 0,
+		demoState->texSet_earth,	// sphere
+		demoState->texSet_stone,	// teapot
+		demoState->texSet_stone,	// ground
 	};
-	const a3ui32 renderModeLightCount[ssfx_renderMode_max] = {
-		ssfxMaxCount_pointLight,
-		ssfxMaxCount_pointLight,
-		ssfxMaxCount_pointLight,
+
+	// height map scale
+	const a3f32 htScale[curvesMaxCount_sceneObject] = {
+		0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+		0.005f,	// sphere
+		0.010f,	// teapot
+		0.015f,	// ground
+	};
+	// tessellation levels
+	const a3f32 tessLevel[curvesMaxCount_sceneObject][4] = {
+		{ 0.0f, 0.0f, 0.0f, 0.0f },
+		{ 0.0f, 0.0f, 0.0f, 0.0f },
+		{ 0.0f, 0.0f, 0.0f, 0.0f },
+		{ 0.0f, 0.0f, 0.0f, 0.0f },
+		{ 0.0f, 0.0f, 0.0f, 0.0f },
+		{ 7.0f, 7.0f, 7.0f, 8.0f },
+		{ 2.0f, 2.0f, 2.0f, 3.0f },
+		{ 4.0f, 4.0f, 4.0f, 5.0f },
+	}, tessLevelCurve[1][2] = {
+		{ 1.0f, 32.0f }
+	};
+
+	// forward pipeline shader programs
+	const a3_DemoStateShaderProgram* renderProgram[curves_renderMode_max] = {
+		demoState->prog_drawPhongNM_ubo,
+		demoState->prog_drawPhongPOM,
+		demoState->prog_drawPhongLOD,
+	};
+	// overlay shader programs
+	const a3_DemoStateShaderProgram* overlayProgram[curves_renderMode_max] = {
+		demoState->prog_drawTangentBasisPOM,
+		demoState->prog_drawTangentBasisPOM,
+		demoState->prog_drawTangentBasisLOD,
+	};
+	// drawable render function
+	const a3_VertexDrawableRenderFunc renderFunc[curves_renderMode_max] = {
+		a3vertexDrawableActivateAndRender,
+		a3vertexDrawableActivateAndRender,
+		a3vertexDrawableRenderTriPatches,
+	};
+	// lights
+	const a3ui32 renderModeLightCount[curves_renderMode_max] = {
+		curvesMaxCount_pointLight,
+		curvesMaxCount_pointLight,
+		curvesMaxCount_pointLight,
 	};
 
 	// framebuffer target for each pass
-	const a3_Framebuffer* writeFBO[ssfx_renderPass_max] = {
+	const a3_Framebuffer* writeFBO[curves_renderPass_max] = {
 		demoState->fbo_c16x4_d24s8,			// scene
-		demoState->fbo_c16x4 + 0,			// light pre-pass
-		demoState->fbo_c16x4 + 1,			// deferred composite
-		demoState->fbo_c16_szHalf + 0,		// bright
-		demoState->fbo_c16_szHalf + 1,		// blur
-		demoState->fbo_c16_szHalf + 2,		
-		demoState->fbo_c16_szQuarter + 0,
-		demoState->fbo_c16_szQuarter + 1,
-		demoState->fbo_c16_szQuarter + 2,
-		demoState->fbo_c16_szEighth + 0,
-		demoState->fbo_c16_szEighth + 1,
-		demoState->fbo_c16_szEighth + 2,
-		demoState->fbo_c16x4 + 3,			// final composite
+		demoState->fbo_c16x4,				// composite
 	};
 
 	// target info
-	a3_DemoMode2_SSFX_RenderMode const renderMode = demoMode->renderMode;
-	a3_DemoMode2_SSFX_RenderPass const renderPass = demoMode->renderPass;
-	a3_DemoMode2_SSFX_RenderTarget const renderTarget = demoMode->renderTarget[renderPass],
+	a3_DemoMode3_Curves_RenderMode const renderMode = demoMode->renderMode;
+	a3_DemoMode3_Curves_RenderPipeline const renderPipeline = demoMode->renderPipeline;
+	a3_DemoMode3_Curves_RenderPass const renderPass = demoMode->renderPass;
+	a3_DemoMode3_Curves_RenderTarget const renderTarget = demoMode->renderTarget[renderPass],
 		renderTargetCount = demoMode->renderTargetCount[renderPass];
+
+	// model drawing function
+	a3_VertexDrawableRenderFunc const a3vertexDrawableRender = renderFunc[renderMode];
 
 	// final model matrix and full matrix stack
 	a3mat4 projectionMat = activeCamera->projectorMatrixStackPtr->projectionMat;
-	a3mat4 projectionBiasMatInv = activeCamera->projectorMatrixStackPtr->projectionBiasMatInverse;
+	a3mat4 projectionMatInv = activeCamera->projectorMatrixStackPtr->projectionMatInverse;
 	a3mat4 viewProjectionMat = activeCamera->projectorMatrixStackPtr->viewProjectionMat;
-	a3mat4 modelMat, modelViewMat, modelViewProjectionMat;
+	a3mat4 modelMat, modelViewProjectionMat;
 
 	// FSQ matrix
 	const a3mat4 fsq = {
@@ -246,43 +298,6 @@ void a3ssfx_render(a3_DemoState const* demoState, a3_DemoMode2_SSFX const* demoM
 		0.0f, 0.0f, 2.0f, 0.0f,
 		0.0f, 0.0f, 0.0f, 1.0f
 	};
-
-	// pixel size and effect axis
-	a3vec2 pixelSize = a3vec2_one;
-
-
-	//-------------------------------------------------------------------------
-	// 0) SHADOW PASS: render scene from light's perspective
-	//	- activate shadow capture framebuffer
-	//	- draw scene
-	//		- clear depth buffer
-	//		- render shapes using pass-thru shaders
-
-/*	// bind scene FBO
-	currentWriteFBO = demoState->fbo_d32;
-	a3framebufferActivate(currentWriteFBO);
-	glClear(GL_DEPTH_BUFFER_BIT);
-
-	currentDemoProgram = demoState->prog_transform;
-	a3shaderProgramActivate(currentDemoProgram->program);
-	glDisable(GL_BLEND);
-
-	// shadow capture on inverted geometry
-	glCullFace(GL_FRONT);
-	for (currentSceneObject = demoMode->obj_sphere, endSceneObject = demoMode->obj_ground;
-		currentSceneObject <= endSceneObject; ++currentSceneObject)
-	{
-		j = currentSceneObject->sceneHierarchyIndex;
-
-		// calculate and send MVP from light's perspective
-		a3real4x4Product(modelViewProjectionMat.m,
-			demoMode->proj_light_main->projectorMatrixStackPtr->viewProjectionMat.m,
-			currentSceneObject->modelMatrixStackPtr->modelMat.m);
-		a3shaderUniformSendFloatMat(a3unif_mat4, 0, currentDemoProgram->uMVP, 1, modelViewProjectionMat.mm);
-		a3shaderUniformSendInt(a3unif_single, currentDemoProgram->uIndex, 1, &j);
-		a3vertexDrawableActivateAndRender(drawable[j]);
-	}
-	glCullFace(GL_BACK);*/
 
 
 	//-------------------------------------------------------------------------
@@ -294,7 +309,7 @@ void a3ssfx_render(a3_DemoState const* demoState, a3_DemoMode2_SSFX const* demoM
 	//		- capture color and depth
 
 	// bind scene FBO
-	currentWriteFBO = writeFBO[ssfx_renderPassScene]; //demoState->fbo_c16x4_d24s8
+	currentWriteFBO = writeFBO[curves_renderPassScene]; //demoState->fbo_c16x4_d24s8
 	a3framebufferActivate(currentWriteFBO);
 
 	// clear buffers
@@ -313,6 +328,9 @@ void a3ssfx_render(a3_DemoState const* demoState, a3_DemoMode2_SSFX const* demoM
 	//	- light data
 	//	- activate shared textures including atlases if using
 	//	- shared animation data
+	a3shaderUniformSendFloatMat(a3unif_mat4, 0, currentDemoProgram->uP, 1, projectionMat.mm);
+	a3shaderUniformSendFloatMat(a3unif_mat4, 0, currentDemoProgram->uP_inv, 1, projectionMatInv.mm);
+	a3shaderUniformSendFloatMat(a3unif_mat4, 0, currentDemoProgram->uAtlas, 1, a3mat4_identity.mm);
 	a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uColor0, hueCount, rgba4->v);
 	if (demoState->updateAnimation)
 		a3shaderUniformSendDouble(a3unif_single, currentDemoProgram->uTime, 1, &demoState->timer_display->totalTime);
@@ -321,12 +339,6 @@ void a3ssfx_render(a3_DemoState const* demoState, a3_DemoMode2_SSFX const* demoM
 	a3shaderUniformBufferActivate(demoState->ubo_transform, demoProg_blockTransformStack);
 	a3shaderUniformBufferActivate(demoState->ubo_light, demoProg_blockLight);
 	a3shaderUniformSendInt(a3unif_single, currentDemoProgram->uCount, 1, renderModeLightCount + renderMode);
-
-	// activate texture atlases
-	a3textureActivate(demoState->tex_atlas_dm, a3tex_unit00);
-	a3textureActivate(demoState->tex_atlas_sm, a3tex_unit01);
-	a3textureActivate(demoState->tex_atlas_nm, a3tex_unit02);
-	a3textureActivate(demoState->tex_atlas_hm, a3tex_unit03);
 
 	// select pipeline algorithm
 	glDisable(GL_BLEND);
@@ -337,8 +349,15 @@ void a3ssfx_render(a3_DemoState const* demoState, a3_DemoMode2_SSFX const* demoM
 	{
 		// send index as uniform and draw; all other model data is shared
 		j = currentSceneObject->sceneHierarchyIndex;
+		a3textureActivate(textureSet[j][0], a3tex_unit00);
+		a3textureActivate(textureSet[j][1], a3tex_unit01);
+		a3textureActivate(textureSet[j][2], a3tex_unit02);
+		a3textureActivate(textureSet[j][3], a3tex_unit03);
+		a3shaderUniformSendFloat(a3unif_vec3, currentDemoProgram->uLevelOuter, 1, tessLevel[j]);
+		a3shaderUniformSendFloat(a3unif_single, currentDemoProgram->uLevelInner, 1, tessLevel[j] + 3);
+		a3shaderUniformSendFloat(a3unif_single, currentDemoProgram->uSize, 1, htScale + j);
 		a3shaderUniformSendInt(a3unif_single, currentDemoProgram->uIndex, 1, &j);
-		a3vertexDrawableActivateAndRender(drawable[j]);
+		a3vertexDrawableRender(drawable[j]);
 	}
 
 	// stop using stencil
@@ -347,40 +366,12 @@ void a3ssfx_render(a3_DemoState const* demoState, a3_DemoMode2_SSFX const* demoM
 
 
 	//-------------------------------------------------------------------------
-	// DEFERRED LIGHTING PRE-PASS
-	//	- bind normal and depth textures from previous pass for lighting
-	//	- draw a bunch of light volumes, inverted and additively
-
-	if (renderMode == ssfx_renderModePhongDL)
-	{
-		// draw light volumes
-		currentDemoProgram = demoState->prog_drawPhongPointLight_instanced;
-		a3shaderProgramActivate(currentDemoProgram->program);
-		a3shaderUniformBufferActivate(demoState->ubo_mvp, demoProg_blockTransformStack);
-		a3shaderUniformBufferActivate(demoState->ubo_light, demoProg_blockLight);
-		a3shaderUniformSendFloatMat(a3unif_mat4, 0, currentDemoProgram->uPB_inv, 1, projectionBiasMatInv.mm);
-		a3framebufferBindDepthTexture(currentWriteFBO, a3tex_unit04);		// depth
-		a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit05, 1);	// normals
-
-		currentWriteFBO = writeFBO[ssfx_renderPassLights];
-		a3framebufferActivate(currentWriteFBO);
-		glClear(GL_COLOR_BUFFER_BIT);
-
-		a3demo_enableAdditiveBlending();
-		glCullFace(GL_FRONT);
-		a3vertexDrawableActivateAndRenderInstanced(demoState->draw_unit_sphere, ssfxMaxCount_pointLight);
-		glCullFace(GL_BACK);
-		glDisable(GL_BLEND);
-	}
-
-
-	//-------------------------------------------------------------------------
 	// COMPOSITION
 	//	- activate target framebuffer
 	//	- draw background if applicable
 
 	// skybox
-	currentWriteFBO = writeFBO[ssfx_renderPassComposite];
+	currentWriteFBO = writeFBO[curves_renderPassComposite];
 	a3framebufferActivate(currentWriteFBO);
 	if (demoState->displaySkybox)
 	{
@@ -396,9 +387,9 @@ void a3ssfx_render(a3_DemoState const* demoState, a3_DemoMode2_SSFX const* demoM
 		glClear(GL_COLOR_BUFFER_BIT);
 	}
 
-	switch (renderMode)
+	switch (renderPipeline)
 	{
-	case ssfx_renderModePhong:
+	case curves_renderPipeForward:
 		// forward shading
 		//	- paste scene image in front of skybox
 		currentDemoProgram = demoState->prog_drawTexture;
@@ -407,29 +398,6 @@ void a3ssfx_render(a3_DemoState const* demoState, a3_DemoMode2_SSFX const* demoM
 		a3shaderUniformSendFloatMat(a3unif_mat4, 0, currentDemoProgram->uAtlas, 1, a3mat4_identity.mm);
 		a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uColor, 1, a3vec4_one.v);
 		a3framebufferBindColorTexture(demoState->fbo_c16x4_d24s8, a3tex_unit00, 0);	// scene color
-		break;
-	case ssfx_renderModePhongDS:
-		// deferred shading
-		//	- similar to light pre-pass but all at once on FSQ
-		currentDemoProgram = demoState->prog_postDeferredShading;
-		a3shaderProgramActivate(currentDemoProgram->program);
-		a3shaderUniformBufferActivate(demoState->ubo_light, demoProg_blockLight);
-		a3shaderUniformSendFloatMat(a3unif_mat4, 0, currentDemoProgram->uPB_inv, 1, projectionBiasMatInv.mm);
-		a3shaderUniformSendInt(a3unif_single, currentDemoProgram->uCount, 1, renderModeLightCount + renderMode);
-		a3framebufferBindDepthTexture(demoState->fbo_c16x4_d24s8, a3tex_unit04);	// scene depth
-		a3framebufferBindColorTexture(demoState->fbo_c16x4_d24s8, a3tex_unit05, 1);	// scene normals
-		a3framebufferBindColorTexture(demoState->fbo_c16x4_d24s8, a3tex_unit06, 0);	// scene texcoords
-		a3textureActivate(demoState->tex_atlas_dm, a3tex_unit00); // diffuse texture atlas
-		break;
-	case ssfx_renderModePhongDL:
-		// deferred lighting composite
-		//	- simple composition: multiply lighting colors by respective texture sample
-		currentDemoProgram = demoState->prog_postDeferredLightingComposite;
-		a3shaderProgramActivate(currentDemoProgram->program);
-		a3framebufferBindColorTexture(writeFBO[ssfx_renderPassLights], a3tex_unit04, 0);	// light pre-pass diffuse
-		a3framebufferBindColorTexture(writeFBO[ssfx_renderPassLights], a3tex_unit05, 1);	// light pre-pass specular
-		a3framebufferBindColorTexture(demoState->fbo_c16x4_d24s8, a3tex_unit06, 0);	// scene texcoords
-		a3textureActivate(demoState->tex_atlas_dm, a3tex_unit00); // diffuse texture atlas
 		break;
 	}
 
@@ -452,96 +420,6 @@ void a3ssfx_render(a3_DemoState const* demoState, a3_DemoMode2_SSFX const* demoM
 	//	- activate texture from previous framebuffer
 	//	- draw FSQ with processing program active
 
-	// optimized bloom algorithm: 
-	//	-> render scene
-	//	-> repeat a few times: 
-	//		-> bright pass, half size
-	//		-> blur in one direction (e.g. horizontal)
-	//		-> blur in other direction (e.g. vertical)
-	//	-> composite original scene result with final blur iteration results
-
-	currentDemoProgram = demoState->prog_postBright;
-	a3shaderProgramActivate(currentDemoProgram->program);
-	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
-	currentWriteFBO = writeFBO[ssfx_renderPassBright2];
-	a3framebufferActivate(currentWriteFBO);
-	a3vertexDrawableRenderActive();
-
-	currentDemoProgram = demoState->prog_postBlur;
-	a3shaderProgramActivate(currentDemoProgram->program);
-	pixelSize.x = a3real_one / (a3real)currentWriteFBO->frameWidth;
-	pixelSize.y = a3real_one / (a3real)currentWriteFBO->frameHeight;
-	a3shaderUniformSendFloat(a3unif_vec2, currentDemoProgram->uAxis, 1, pixelSize.v);
-	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
-	currentWriteFBO = writeFBO[ssfx_renderPassBlurH2];
-	a3framebufferActivate(currentWriteFBO);
-	a3vertexDrawableRenderActive();
-
-	pixelSize.y = -pixelSize.y;
-	a3shaderUniformSendFloat(a3unif_vec2, currentDemoProgram->uAxis, 1, pixelSize.v);
-	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
-	currentWriteFBO = writeFBO[ssfx_renderPassBlurV2];
-	a3framebufferActivate(currentWriteFBO);
-	a3vertexDrawableRenderActive();
-
-	currentDemoProgram = demoState->prog_postBright;
-	a3shaderProgramActivate(currentDemoProgram->program);
-	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
-	currentWriteFBO = writeFBO[ssfx_renderPassBright4];
-	a3framebufferActivate(currentWriteFBO);
-	a3vertexDrawableRenderActive();
-
-	currentDemoProgram = demoState->prog_postBlur;
-	a3shaderProgramActivate(currentDemoProgram->program);
-	pixelSize.x = a3real_one / (a3real)currentWriteFBO->frameWidth;
-	pixelSize.y = a3real_one / (a3real)currentWriteFBO->frameHeight;
-	a3shaderUniformSendFloat(a3unif_vec2, currentDemoProgram->uAxis, 1, pixelSize.v);
-	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
-	currentWriteFBO = writeFBO[ssfx_renderPassBlurH4];
-	a3framebufferActivate(currentWriteFBO);
-	a3vertexDrawableRenderActive();
-
-	pixelSize.y = -pixelSize.y;
-	a3shaderUniformSendFloat(a3unif_vec2, currentDemoProgram->uAxis, 1, pixelSize.v);
-	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
-	currentWriteFBO = writeFBO[ssfx_renderPassBlurV4];
-	a3framebufferActivate(currentWriteFBO);
-	a3vertexDrawableRenderActive();
-
-	currentDemoProgram = demoState->prog_postBright;
-	a3shaderProgramActivate(currentDemoProgram->program);
-	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
-	currentWriteFBO = writeFBO[ssfx_renderPassBright8];
-	a3framebufferActivate(currentWriteFBO);
-	a3vertexDrawableRenderActive();
-
-	currentDemoProgram = demoState->prog_postBlur;
-	a3shaderProgramActivate(currentDemoProgram->program);
-	pixelSize.x = a3real_one / (a3real)currentWriteFBO->frameWidth;
-	pixelSize.y = a3real_one / (a3real)currentWriteFBO->frameHeight;
-	a3shaderUniformSendFloat(a3unif_vec2, currentDemoProgram->uAxis, 1, pixelSize.v);
-	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
-	currentWriteFBO = writeFBO[ssfx_renderPassBlurH8];
-	a3framebufferActivate(currentWriteFBO);
-	a3vertexDrawableRenderActive();
-
-	pixelSize.y = -pixelSize.y;
-	a3shaderUniformSendFloat(a3unif_vec2, currentDemoProgram->uAxis, 1, pixelSize.v);
-	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
-	currentWriteFBO = writeFBO[ssfx_renderPassBlurV8];
-	a3framebufferActivate(currentWriteFBO);
-	a3vertexDrawableRenderActive();
-
-	currentDemoProgram = demoState->prog_postBlend;
-	a3shaderProgramActivate(currentDemoProgram->program);
-	a3framebufferBindColorTexture(writeFBO[ssfx_renderPassComposite], a3tex_unit00, 0);
-	a3framebufferBindColorTexture(writeFBO[ssfx_renderPassBlurV2], a3tex_unit01, 0);
-	a3framebufferBindColorTexture(writeFBO[ssfx_renderPassBlurV4], a3tex_unit02, 0);
-	a3framebufferBindColorTexture(writeFBO[ssfx_renderPassBlurV8], a3tex_unit03, 0);
-	currentWriteFBO = writeFBO[ssfx_renderPassDisplay];
-	a3framebufferActivate(currentWriteFBO);
-	a3vertexDrawableRenderActive();
-
 
 	//-------------------------------------------------------------------------
 	// DISPLAY: final pass, perform and present final composite
@@ -560,24 +438,13 @@ void a3ssfx_render(a3_DemoState const* demoState, a3_DemoMode2_SSFX const* demoM
 	// select output to display
 	switch (renderPass)
 	{
-	case ssfx_renderPassScene:
+	case curves_renderPassScene:
 		if (currentDisplayFBO->color && (!currentDisplayFBO->depthStencil || renderTarget < renderTargetCount - 1))
 			a3framebufferBindColorTexture(currentDisplayFBO, a3tex_unit00, renderTarget);
 		else
 			a3framebufferBindDepthTexture(currentDisplayFBO, a3tex_unit00);
 		break;
-	case ssfx_renderPassComposite:
-	case ssfx_renderPassLights:
-	case ssfx_renderPassBright2:
-	case ssfx_renderPassBlurH2:
-	case ssfx_renderPassBlurV2:
-	case ssfx_renderPassBright4:
-	case ssfx_renderPassBlurH4:
-	case ssfx_renderPassBlurV4:
-	case ssfx_renderPassBright8:
-	case ssfx_renderPassBlurH8:
-	case ssfx_renderPassBlurV8:
-	case ssfx_renderPassDisplay:
+	case curves_renderPassComposite:
 		a3framebufferBindColorTexture(currentDisplayFBO, a3tex_unit00, renderTarget);
 		break;
 	}
@@ -618,7 +485,17 @@ void a3ssfx_render(a3_DemoState const* demoState, a3_DemoMode2_SSFX const* demoM
 		// draw grid aligned to world
 		if (demoState->displayGrid)
 		{
+			// actual grid
 			a3demo_drawModelSolidColor(modelViewProjectionMat.m, viewProjectionMat.m, a3mat4_identity.m, demoState->prog_drawColorUnif, demoState->draw_grid, blue);
+
+			// curve
+			currentDemoProgram = demoState->prog_drawCurvePath;
+			a3shaderProgramActivate(currentDemoProgram->program);
+			a3shaderUniformBufferActivate(demoState->ubo_curve, demoProg_blockCurve);
+			a3shaderUniformSendFloatMat(a3unif_mat4, 0, currentDemoProgram->uP, 1, viewProjectionMat.mm);
+			a3shaderUniformSendFloat(a3unif_vec2, currentDemoProgram->uLevelOuter, 1, tessLevelCurve[0]);
+			a3shaderUniformSendInt(a3unif_single, currentDemoProgram->uCount, 1, &demoMode->curveWaypointCount);
+			a3vertexDrawableRenderIsoPatches(demoMode->curveWaypointCount);
 		}
 
 		if (demoState->displayTangentBases || demoState->displayWireframe)
@@ -626,9 +503,11 @@ void a3ssfx_render(a3_DemoState const* demoState, a3_DemoMode2_SSFX const* demoM
 			const a3i32 flag[1] = { demoState->displayTangentBases * 3 + demoState->displayWireframe * 4 };
 			const a3f32 size[1] = { 0.0625f };
 
-			currentDemoProgram = demoState->prog_drawTangentBasis;
+			currentDemoProgram = overlayProgram[renderMode];
 			a3shaderProgramActivate(currentDemoProgram->program);
 
+			// send lighting uniforms and bind blocks where appropriate
+			a3shaderUniformBufferActivate(demoState->ubo_transform, demoProg_blockTransformStack);
 			// projection matrix
 			a3shaderUniformSendFloatMat(a3unif_mat4, 0, currentDemoProgram->uP, 1, projectionMat.mm);
 			// wireframe color
@@ -644,15 +523,11 @@ void a3ssfx_render(a3_DemoState const* demoState, a3_DemoMode2_SSFX const* demoM
 				currentSceneObject <= endSceneObject; ++currentSceneObject)
 			{
 				j = currentSceneObject->sceneHierarchyIndex;
-				i = (j * 3) % hueCount;
-				modelViewMat = currentSceneObject->modelMatrixStackPtr->modelViewMat;
-				a3shaderUniformSendFloatMat(a3unif_mat4, 0, currentDemoProgram->uMV, 1, modelViewMat.mm);
-				modelViewMat = currentSceneObject->modelMatrixStackPtr->modelViewMatInverseTranspose;
-				a3shaderUniformSendFloatMat(a3unif_mat4, 0, currentDemoProgram->uMV_nrm, 1, modelViewMat.mm);
-				modelViewProjectionMat = currentSceneObject->modelMatrixStackPtr->modelViewProjectionMat;
-				a3shaderUniformSendFloatMat(a3unif_mat4, 0, currentDemoProgram->uMVP, 1, modelViewProjectionMat.mm);
-				a3shaderUniformSendInt(a3unif_single, currentDemoProgram->uIndex, 1, &i);
-				a3vertexDrawableActivateAndRender(drawable[j]);
+				a3textureActivate(textureSet[j][3], a3tex_unit03);
+				a3shaderUniformSendFloat(a3unif_vec3, currentDemoProgram->uLevelOuter, 1, tessLevel[j]);
+				a3shaderUniformSendFloat(a3unif_single, currentDemoProgram->uLevelInner, 1, tessLevel[j] + 3);
+				a3shaderUniformSendInt(a3unif_single, currentDemoProgram->uIndex, 1, &j);
+				a3vertexDrawableRender(drawable[j]);
 			}
 		}
 
@@ -680,7 +555,7 @@ void a3ssfx_render(a3_DemoState const* demoState, a3_DemoMode2_SSFX const* demoM
 		a3shaderProgramActivate(currentDemoProgram->program);
 		a3vertexDrawableActivate(demoState->draw_unit_sphere);
 		a3real4x4SetScale(modelMat.m, 0.25f);
-		for (i = 0; i < ssfxMaxCount_pointLight; ++i)
+		for (i = 0; i < curvesMaxCount_pointLight; ++i)
 		{
 			modelMat.v3 = demoMode->pointLightData[i].worldPos;
 			a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uColor, 1, demoMode->pointLightData[i].color.v);

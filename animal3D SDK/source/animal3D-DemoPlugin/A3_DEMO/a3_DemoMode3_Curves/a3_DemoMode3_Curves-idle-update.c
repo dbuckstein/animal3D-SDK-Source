@@ -18,7 +18,7 @@
 	animal3D SDK: Minimal 3D Animation Framework
 	By Daniel S. Buckstein
 	
-	a3_DemoMode2_SSFX-idle-update.c
+	a3_DemoMode3_Curves-idle-update.c
 	Demo mode implementations: animation scene.
 
 	********************************************
@@ -28,7 +28,7 @@
 
 //-----------------------------------------------------------------------------
 
-#include "../a3_DemoMode2_SSFX.h"
+#include "../a3_DemoMode3_Curves.h"
 
 //typedef struct a3_DemoState a3_DemoState;
 #include "../a3_DemoState.h"
@@ -39,15 +39,31 @@
 //-----------------------------------------------------------------------------
 // UPDATE
 
-void a3ssfx_update_graphics(a3_DemoState* demoState, a3_DemoMode2_SSFX* demoMode)
+void a3curves_update_graphics(a3_DemoState* demoState, a3_DemoMode3_Curves* demoMode)
 {
-	// upload
 	a3bufferRefillOffset(demoState->ubo_transform, 0, 0, sizeof(demoMode->modelMatrixStack), demoMode->modelMatrixStack);
-	a3bufferRefillOffset(demoState->ubo_mvp, 0, 0, sizeof(demoMode->pointLightMVP), demoMode->pointLightMVP);
 	a3bufferRefillOffset(demoState->ubo_light, 0, 0, sizeof(demoMode->pointLightData), demoMode->pointLightData);
+	a3bufferRefillOffset(demoState->ubo_curve, 0, 0, sizeof(demoMode->curveWaypoint), demoMode->curveWaypoint);
+	a3bufferRefillOffset(demoState->ubo_curve, 0, sizeof(demoMode->curveWaypoint), sizeof(demoMode->curveTangent), demoMode->curveTangent);
 }
 
-void a3ssfx_update_scene(a3_DemoState* demoState, a3_DemoMode2_SSFX* demoMode, a3f64 const dt)
+void a3curves_update_animation(a3_DemoState* demoState, a3_DemoMode3_Curves* demoMode, a3f64 const dt)
+{
+	if (demoState->updateAnimation)
+	{
+		a3_SceneObjectData* sceneObjectData = demoMode->obj_teapot->dataPtr;
+
+		// ****TO-DO: 
+		//	-> interpolate teapot's position using algorithm that matches path drawn
+		//		(hint: use the one that looks the best)
+		//	-> update the animation timer
+		//		(hint: check if we've surpassed the segment's duration)
+		// teapot follows curved path
+
+	}
+}
+
+void a3curves_update_scene(a3_DemoState* demoState, a3_DemoMode3_Curves* demoMode, a3f64 const dt)
 {
 	void a3demo_update_defaultAnimation(a3f64 const dt, a3_SceneObjectComponent const* sceneObjectArray,
 		a3ui32 const count, a3ui32 const axis, a3boolean const updateAnimation);
@@ -70,8 +86,6 @@ void a3ssfx_update_scene(a3_DemoState* demoState, a3_DemoMode2_SSFX* demoMode, a
 
 	a3_PointLightData* pointLightData;
 	a3ui32 i;
-	a3mat4* pointLightMVP;
-	a3real const ratio = a3trigFaceToPointRatio(a3real_threesixty, a3real_oneeighty, 32, 24);
 
 	// update camera
 	a3demo_updateSceneObject(demoMode->obj_camera_main, 1);
@@ -79,6 +93,10 @@ void a3ssfx_update_scene(a3_DemoState* demoState, a3_DemoMode2_SSFX* demoMode, a
 	a3demo_updateProjector(projector);
 	a3demo_updateProjectorViewMats(projector);
 	a3demo_updateProjectorBiasMats(projector, bias, biasInv);
+
+	// update light
+	a3demo_updateSceneObject(demoMode->obj_light_main, 1);
+	a3demo_updateSceneObjectStack(demoMode->obj_light_main, projector);
 
 	// update skybox
 	a3demo_updateSceneObject(demoMode->obj_skybox, 0);
@@ -89,20 +107,14 @@ void a3ssfx_update_scene(a3_DemoState* demoState, a3_DemoMode2_SSFX* demoMode, a
 	a3demo_update_defaultAnimation((dt * 15.0), demoMode->obj_sphere,
 		(a3ui32)(demoMode->obj_ground - demoMode->obj_sphere), 2, demoState->updateAnimation);
 
+	// specific object animation
+	a3curves_update_animation(demoState, demoMode, dt);
+
+	a3demo_updateSceneObject(demoMode->obj_curve, 0);
+	a3demo_updateSceneObjectStack(demoMode->obj_curve, projector);
+
 	a3demo_updateSceneObject(demoMode->obj_sphere, 0);
 	a3demo_updateSceneObjectStack(demoMode->obj_sphere, projector);
-
-	a3demo_updateSceneObject(demoMode->obj_cylinder, 0);
-	a3demo_updateSceneObjectStack(demoMode->obj_cylinder, projector);
-
-	a3demo_updateSceneObject(demoMode->obj_capsule, 0);
-	a3demo_updateSceneObjectStack(demoMode->obj_capsule, projector);
-
-	a3demo_updateSceneObject(demoMode->obj_torus, 0);
-	a3demo_updateSceneObjectStack(demoMode->obj_torus, projector);
-
-	a3demo_updateSceneObject(demoMode->obj_cone, 0);
-	a3demo_updateSceneObjectStack(demoMode->obj_cone, projector);
 
 	a3demo_updateSceneObject(demoMode->obj_teapot, 0);
 	a3demo_updateSceneObjectStack(demoMode->obj_teapot, projector);
@@ -111,28 +123,23 @@ void a3ssfx_update_scene(a3_DemoState* demoState, a3_DemoMode2_SSFX* demoMode, a
 	a3demo_updateSceneObjectStack(demoMode->obj_ground, projector);
 
 	// update light positions and transforms
-	for (i = 0, pointLightData = demoMode->pointLightData, pointLightMVP = demoMode->pointLightMVP;
-		i < ssfxMaxCount_pointLight;
-		++i, ++pointLightData, ++pointLightMVP)
+	for (i = 0, pointLightData = demoMode->pointLightData;
+		i < curvesMaxCount_pointLight;
+		++i, ++pointLightData)
 	{
 		a3real4Real4x4Product(pointLightData->position.v,
 			projector->sceneObjectPtr->modelMatrixStackPtr->modelMatInverse.m,
 			pointLightData->worldPos.v);
-
-		// update and transform light matrix
-		a3real4x4SetScale(pointLightMVP->m, pointLightData->radius * ratio);
-		pointLightMVP->v3 = pointLightData->position;
-		a3real4x4Concat(projector->projectorMatrixStackPtr->projectionMat.m, pointLightMVP->m);
 	}
 }
 
-void a3ssfx_update(a3_DemoState* demoState, a3_DemoMode2_SSFX* demoMode, a3f64 const dt)
+void a3curves_update(a3_DemoState* demoState, a3_DemoMode3_Curves* demoMode, a3f64 const dt)
 {
 	// update scene objects and related data
-	a3ssfx_update_scene(demoState, demoMode, dt);
+	a3curves_update_scene(demoState, demoMode, dt);
 
 	// prepare and upload graphics data
-	a3ssfx_update_graphics(demoState, demoMode);
+	a3curves_update_graphics(demoState, demoMode);
 }
 
 

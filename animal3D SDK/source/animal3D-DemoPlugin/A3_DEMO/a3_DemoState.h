@@ -46,6 +46,7 @@
 #include "a3_DemoMode0_Intro.h"
 #include "a3_DemoMode1_PostProc.h"
 #include "a3_DemoMode2_SSFX.h"
+#include "a3_DemoMode3_Curves.h"
 
 
 //-----------------------------------------------------------------------------
@@ -69,6 +70,7 @@ enum a3_DemoState_ModeName
 	demoState_modeIntro,			// starter scene
 	demoState_modePostProc,			// post-processing scene
 	demoState_modeSSFX,				// screen-space effects scene
+	demoState_modeCurves,			// curve editor scene
 
 	demoState_mode_max
 };
@@ -171,6 +173,7 @@ struct a3_DemoState
 	a3_DemoMode0_Intro demoMode0[1];
 	a3_DemoMode1_PostProc demoMode1[1];
 	a3_DemoMode2_SSFX demoMode2[1];
+	a3_DemoMode3_Curves demoMode3[1];
 	a3_DemoState_ModeName demoMode;
 	a3_DemoModeCallbacks demoModeCallbacks[demoState_mode_max];
 	a3_DemoModeCallbacks const* demoModeCallbacksPtr;
@@ -186,6 +189,9 @@ struct a3_DemoState
 
 	// atlas matrices
 	a3mat4 atlas_earth, atlas_mars, atlas_moon, atlas_marble, atlas_copper, atlas_stone, atlas_checker;
+
+	// texture sets
+	a3_Texture const* texSet_earth[4], * texSet_mars[4], * texSet_stone[4];
 
 
 	//-------------------------------------------------------------------------
@@ -282,6 +288,12 @@ struct a3_DemoState
 				prog_drawPhongPointLight_instanced[1],		// draw Phong result for point light volume
 				prog_drawGBuffers[1],						// draw scene object G-buffers only
 				prog_drawPhongNM_ubo[1];					// draw Phong shading model with normal mapping, using UBOs
+			a3_DemoStateShaderProgram
+				prog_drawCurvePath[1],						// draw curve segment path
+				prog_drawTangentBasisPOM[1],				// draw tangent basis and wireframe for POM objects
+				prog_drawTangentBasisLOD[1],				// draw tangent basis and wireframe with LOD height
+				prog_drawPhongPOM[1],						// draw Phong with parallax occlusion mapping (POM)
+				prog_drawPhongLOD[1];						// draw Phong with level-of-detail (LOD) tessellation
 		};
 	};
 
@@ -290,6 +302,7 @@ struct a3_DemoState
 		a3_UniformBuffer uniformBuffer[demoStateMaxCount_uniformBuffer];
 		struct {
 			a3_UniformBuffer
+				ubo_curve[1],								// uniform buffer for curve data
 				ubo_light[1],								// uniform buffer for light data
 				ubo_mvp[1],									// uniform buffer for mvp matrices only
 				ubo_transform[1];							// uniform buffer for transformation data

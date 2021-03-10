@@ -100,6 +100,18 @@
     <Filter Include="Resource Files\A3_DEMO\glsl\4x\vs\02-pipeline-deferred">
       <UniqueIdentifier>{47d991af-a531-48a1-9ac6-3c4e519e0ede}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\common\A3_DEMO\a3_DemoMode3_Curves">
+      <UniqueIdentifier>{7f39030b-7616-484e-8f25-5825c270e8a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\A3_DEMO\glsl\4x\fs\03-lod">
+      <UniqueIdentifier>{c7fdfc4f-7682-4162-807a-6c7419259091}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\A3_DEMO\glsl\4x\ts\03-lod">
+      <UniqueIdentifier>{9fd408c8-0f25-4e28-85d0-949162329a03}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\A3_DEMO\glsl\4x\vs\03-lod">
+      <UniqueIdentifier>{2aba9940-dbb2-4d8f-a534-d9a9c7967814}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="_src_win\main_dll.c">
@@ -177,6 +189,21 @@
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode2_SSFX\a3_DemoMode2_SSFX-unload.c">
       <Filter>Source Files\common\A3_DEMO\a3_DemoMode2_SSFX</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode3_Curves\a3_DemoMode3_Curves-idle-input.c">
+      <Filter>Source Files\common\A3_DEMO\a3_DemoMode3_Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode3_Curves\a3_DemoMode3_Curves-idle-render.c">
+      <Filter>Source Files\common\A3_DEMO\a3_DemoMode3_Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode3_Curves\a3_DemoMode3_Curves-idle-update.c">
+      <Filter>Source Files\common\A3_DEMO\a3_DemoMode3_Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode3_Curves\a3_DemoMode3_Curves-load.c">
+      <Filter>Source Files\common\A3_DEMO\a3_DemoMode3_Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode3_Curves\a3_DemoMode3_Curves-unload.c">
+      <Filter>Source Files\common\A3_DEMO\a3_DemoMode3_Curves</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoState.h">
@@ -207,6 +234,9 @@
       <Filter>Header Files\A3_DEMO</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode2_SSFX.h">
+      <Filter>Header Files\A3_DEMO</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode3_Curves.h">
       <Filter>Header Files\A3_DEMO</Filter>
     </ClInclude>
   </ItemGroup>
@@ -309,6 +339,24 @@
     </None>
     <None Include="..\..\..\resource\glsl\4x\fs\02-pipeline-deferred\postDeferredShading_fs4x.glsl">
       <Filter>Resource Files\A3_DEMO\glsl\4x\fs\02-pipeline-deferred</Filter>
+    </None>
+    <None Include="..\..\..\resource\glsl\4x\ts\03-lod\passTangentBasis_displace_tes4x.glsl">
+      <Filter>Resource Files\A3_DEMO\glsl\4x\ts\03-lod</Filter>
+    </None>
+    <None Include="..\..\..\resource\glsl\4x\fs\03-lod\drawPhongPOM_fs4x.glsl">
+      <Filter>Resource Files\A3_DEMO\glsl\4x\fs\03-lod</Filter>
+    </None>
+    <None Include="..\..\..\resource\glsl\4x\ts\03-lod\tessTriTangentBasis_tcs4x.glsl">
+      <Filter>Resource Files\A3_DEMO\glsl\4x\ts\03-lod</Filter>
+    </None>
+    <None Include="..\..\..\resource\glsl\4x\vs\03-lod\empty_vs4x.glsl">
+      <Filter>Resource Files\A3_DEMO\glsl\4x\vs\03-lod</Filter>
+    </None>
+    <None Include="..\..\..\resource\glsl\4x\ts\03-lod\tessIso_tcs4x.glsl">
+      <Filter>Resource Files\A3_DEMO\glsl\4x\ts\03-lod</Filter>
+    </None>
+    <None Include="..\..\..\resource\glsl\4x\ts\03-lod\passColor_interp_tes4x.glsl">
+      <Filter>Resource Files\A3_DEMO\glsl\4x\ts\03-lod</Filter>
     </None>
   </ItemGroup>
 </Project>
