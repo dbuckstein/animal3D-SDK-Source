@@ -823,9 +823,9 @@ LRESULT CALLBACK a3windowInternalWndProc(HWND hWnd, UINT message, WPARAM wParam,
 			if (wnd->isStandalone)
 			{
 				// allocate and load single demo info
-				a3appAllocDemoInfo(&demo->records, 1);
+				//a3appAllocDemoInfo(&demo->records, 1);
 				demo->numRecords = a3appLoadDemoInfo(&demo->records,
-					"./animal3D-demos/animal3D-demoinfo.txt", 1);
+					"./animal3D-demos/animal3D-demoinfo.txt", 0);
 				if (demo->numRecords)
 				{
 					// moved to after window is shown to ensure context gets set
