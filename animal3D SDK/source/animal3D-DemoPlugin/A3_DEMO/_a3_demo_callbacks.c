@@ -117,21 +117,25 @@ void a3intro_load(a3_DemoState const* demoState, a3_DemoMode0_Intro* demoMode);
 void a3postproc_load(a3_DemoState const* demoState, a3_DemoMode1_PostProc* demoMode);
 void a3ssfx_load(a3_DemoState const* demoState, a3_DemoMode2_SSFX* demoMode);
 void a3curves_load(a3_DemoState const* demoState, a3_DemoMode3_Curves* demoMode);
+void a3animate_load(a3_DemoState const* demoState, a3_DemoMode4_Animate* demoMode);
 
 void a3intro_loadValidate(a3_DemoState const* demoState, a3_DemoMode0_Intro* demoMode);
 void a3postproc_loadValidate(a3_DemoState const* demoState, a3_DemoMode1_PostProc* demoMode);
 void a3ssfx_loadValidate(a3_DemoState const* demoState, a3_DemoMode2_SSFX* demoMode);
 void a3curves_loadValidate(a3_DemoState const* demoState, a3_DemoMode3_Curves* demoMode);
+void a3animate_loadValidate(a3_DemoState const* demoState, a3_DemoMode4_Animate* demoMode);
 
 void a3intro_unload(a3_DemoState const* demoState, a3_DemoMode0_Intro* demoMode);
 void a3postproc_unload(a3_DemoState const* demoState, a3_DemoMode1_PostProc* demoMode);
 void a3ssfx_unload(a3_DemoState const* demoState, a3_DemoMode2_SSFX* demoMode);
 void a3curves_unload(a3_DemoState const* demoState, a3_DemoMode3_Curves* demoMode);
+void a3animate_unload(a3_DemoState const* demoState, a3_DemoMode4_Animate* demoMode);
 
 void a3intro_unloadValidate(a3_DemoState const* demoState, a3_DemoMode0_Intro* demoMode);
 void a3postproc_unloadValidate(a3_DemoState const* demoState, a3_DemoMode1_PostProc* demoMode);
 void a3ssfx_unloadValidate(a3_DemoState const* demoState, a3_DemoMode2_SSFX* demoMode);
 void a3curves_unloadValidate(a3_DemoState const* demoState, a3_DemoMode3_Curves* demoMode);
+void a3animate_unloadValidate(a3_DemoState const* demoState, a3_DemoMode4_Animate* demoMode);
 
 
 //-----------------------------------------------------------------------------
@@ -183,15 +187,16 @@ void a3demo_load(a3_DemoState* demoState)
 	a3postproc_load(demoState, demoState->demoMode1);
 	a3ssfx_load(demoState, demoState->demoMode2);
 	a3curves_load(demoState, demoState->demoMode3);
+	a3animate_load(demoState, demoState->demoMode4);
 
 	// set flags
 	demoState->displayGrid = a3true;
-	demoState->displayWorldAxes = a3false;
+	demoState->displayWorldAxes = a3true;
 	demoState->displayObjectAxes = a3false;
 	demoState->displayTangentBases = a3false;
 	demoState->displayWireframe = a3false;
 	demoState->displaySkybox = a3true;
-	demoState->displayHiddenVolumes = a3false;
+	demoState->displayHiddenVolumes = a3true;
 	demoState->updateAnimation = a3true;
 	demoState->stencilTest = a3false;
 	demoState->skipIntermediatePasses = a3true;
@@ -209,6 +214,7 @@ void a3demo_unload(a3_DemoState* demoState)
 	a3postproc_unload(demoState, demoState->demoMode1);
 	a3ssfx_unload(demoState, demoState->demoMode2);
 	a3curves_unload(demoState, demoState->demoMode3);
+	a3animate_unload(demoState, demoState->demoMode4);
 }
 
 void a3demoMode_loadValidate(a3_DemoState* demoState)
@@ -218,6 +224,7 @@ void a3demoMode_loadValidate(a3_DemoState* demoState)
 	a3postproc_loadValidate(demoState, demoState->demoMode1);
 	a3ssfx_loadValidate(demoState, demoState->demoMode2);
 	a3curves_loadValidate(demoState, demoState->demoMode3);
+	a3animate_loadValidate(demoState, demoState->demoMode4);
 }
 
 void a3demoMode_unloadValidate(a3_DemoState* demoState)
@@ -227,6 +234,7 @@ void a3demoMode_unloadValidate(a3_DemoState* demoState)
 	a3postproc_unloadValidate(demoState, demoState->demoMode1);
 	a3ssfx_unloadValidate(demoState, demoState->demoMode2);
 	a3curves_unloadValidate(demoState, demoState->demoMode3);
+	a3animate_unloadValidate(demoState, demoState->demoMode4);
 }
 
 void a3demo_idle(a3_DemoState* demoState, a3f64 const dt)
@@ -337,7 +345,7 @@ A3DYLIBSYMBOL a3_DemoState *a3demoCB_load(a3_DemoState *demoState, a3boolean hot
 		demoState->textMode = demoState_textControls;
 
 		// enable asset streaming between loads
-		//demoState->streaming = a3true;
+		demoState->streaming = a3true;
 
 		// create directory for data
 		a3fileStreamMakeDirectory("./data");
