@@ -1,5 +1,5 @@
 /*
-	Copyright 2011-2021 Daniel S. Buckstein
+	Copyright 2011-2020 Daniel S. Buckstein
 
 	Licensed under the Apache License, Version 2.0 (the "License");
 	you may not use this file except in compliance with the License.
@@ -24,10 +24,15 @@
 
 #version 450
 
+in vec4 vColor;
+
+uniform vec4 uColor;
+
 layout (location = 0) out vec4 rtFragColor;
 
 void main()
 {
 	// DUMMY OUTPUT: all fragments are OPAQUE ORANGE
-	rtFragColor = vec4(1.0, 0.5, 0.0, 1.0);
+//	rtFragColor = vec4(1.0, 0.5, 0.0, 1.0);
+	rtFragColor = uColor * vColor;
 }
