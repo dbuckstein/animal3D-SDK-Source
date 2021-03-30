@@ -18,7 +18,7 @@
 	animal3D SDK: Minimal 3D Animation Framework
 	By Daniel S. Buckstein
 
-	a3_DemoMode3_Curves-idle-render.c
+	a3_DemoMode4_Animate-idle-render.c
 	Demo mode implementations: animation scene.
 
 	********************************************
@@ -28,7 +28,7 @@
 
 //-----------------------------------------------------------------------------
 
-#include "../a3_DemoMode3_Curves.h"
+#include "../a3_DemoMode4_Animate.h"
 
 //typedef struct a3_DemoState a3_DemoState;
 #include "../a3_DemoState.h"
@@ -49,58 +49,56 @@
 //-----------------------------------------------------------------------------
 
 // controls for pipelines mode
-void a3curves_render_controls(a3_DemoState const* demoState, a3_DemoMode3_Curves const* demoMode,
+void a3animate_render_controls(a3_DemoState const* demoState, a3_DemoMode4_Animate const* demoMode,
 	a3_TextRenderer const* text, a3vec4 const col,
 	a3f32 const textAlign, a3f32 const textDepth, a3f32 const textOffsetDelta, a3f32 textOffset)
 {
 	// forward pipeline names
-	a3byte const* renderModeName[curves_renderMode_max] = {
-		"Phong, normal mapping",
-		"Phong, parallax occlusion mapping",
-		"Phong, level-of-detail",
+	a3byte const* renderModeName[animate_renderMode_max] = {
+		"Default",
 	};
 
 	// pipeline names
-	a3byte const* renderPipelineName[curves_renderPipe_max] = {
+	a3byte const* renderPipelineName[animate_renderPipe_max] = {
 		"Forward",
 	};
 
 	// render pass names
-	a3byte const* renderPassName[curves_renderPass_max] = {
+	a3byte const* renderPassName[animate_renderPass_max] = {
 		"Scene",
 		"Composite",
 	};
 
 	// render target names
-	a3byte const* renderTargetName_scene[curves_renderTargetScene_max] = {
+	a3byte const* renderTargetName_scene[animate_renderTargetScene_max] = {
 		"Color buffer 0 (final color)",
 		"Color buffer 1 (normals [opt])",
 		"Color buffer 2 (diffuse sample [opt])",
 		"Color buffer 3 (specular sample [opt])",
 		"Depth buffer",
 	};
-	a3byte const* renderTargetName_post[curves_renderTargetPost_max] = {
+	a3byte const* renderTargetName_post[animate_renderTargetPost_max] = {
 		"Color buffer 0 (final color)",
 	};
-	a3byte const* const* renderTargetName[curves_renderPass_max] = {
+	a3byte const* const* renderTargetName[animate_renderPass_max] = {
 		renderTargetName_scene,
 		renderTargetName_post,
 	};
 
 	// modes
-	a3_DemoMode3_Curves_RenderMode const renderMode = demoMode->renderMode;
-	a3_DemoMode3_Curves_RenderPass const renderPipeline = demoMode->renderPipeline;
-	a3_DemoMode3_Curves_RenderPass const renderPass = demoMode->renderPass;
-	a3_DemoMode3_Curves_RenderTarget const renderTarget = demoMode->renderTarget[renderPass],
+	a3_DemoMode4_Animate_RenderMode const renderMode = demoMode->renderMode;
+	a3_DemoMode4_Animate_RenderPass const renderPipeline = demoMode->renderPipeline;
+	a3_DemoMode4_Animate_RenderPass const renderPass = demoMode->renderPass;
+	a3_DemoMode4_Animate_RenderTarget const renderTarget = demoMode->renderTarget[renderPass],
 		renderTargetCount = demoMode->renderTargetCount[renderPass];
 
 	// lighting modes
 	a3textDraw(text, textAlign, textOffset += textOffsetDelta, textDepth, col.r, col.g, col.b, col.a,
-		"    Render mode (%u / %u) ('j' | 'k'): %s", renderMode + 1, curves_renderMode_max, renderModeName[renderMode]);
+		"    Render mode (%u / %u) ('j' | 'k'): %s", renderMode + 1, animate_renderMode_max, renderModeName[renderMode]);
 	a3textDraw(text, textAlign, textOffset += textOffsetDelta, textDepth, col.r, col.g, col.b, col.a,
-		"    Render pipeline (%u / %u) ('G' | 'H'): %s", renderPipeline + 1, curves_renderPipe_max, renderPipelineName[renderPipeline]);
+		"    Render pipeline (%u / %u) ('G' | 'H'): %s", renderPipeline + 1, animate_renderPipe_max, renderPipelineName[renderPipeline]);
 	a3textDraw(text, textAlign, textOffset += textOffsetDelta, textDepth, col.r, col.g, col.b, col.a,
-		"        Render pass (%u / %u) ('J' | 'K'): %s", renderPass + 1, curves_renderPass_max, renderPassName[renderPass]);
+		"        Render pass (%u / %u) ('J' | 'K'): %s", renderPass + 1, animate_renderPass_max, renderPassName[renderPass]);
 	a3textDraw(text, textAlign, textOffset += textOffsetDelta, textDepth, col.r, col.g, col.b, col.a,
 		"            Render target (%u / %u) ('N' | 'M'): %s", renderTarget + 1, renderTargetCount, renderTargetName[renderPass][renderTarget]);
 }
@@ -108,57 +106,8 @@ void a3curves_render_controls(a3_DemoState const* demoState, a3_DemoMode3_Curves
 
 //-----------------------------------------------------------------------------
 
-a3ret a3vertexDrawableRenderIsoPatches(a3ui32 const count)
-{
-	if (count)
-	{
-		// force isoline patches
-		glPatchParameteri(GL_PATCH_VERTICES, 2);
-		glBindVertexArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-		glDrawArrays(GL_PATCHES, 0, 2 * count);
-		return 1;
-	}
-	return -1;
-}
-
-// draw as patches
-a3ret a3vertexDrawableRenderTriPatches(a3_VertexDrawable const* drawable)
-{
-	// triangle: use first 3 outer levels and only first inner
-	// https://www.khronos.org/opengl/wiki/Tessellation 
-	//a3f32 const outerLevels[4] = { 1.0f, 1.0f, 1.0f, 0.0f }, innerLevels[2] = { 1.0f, 0.0f }; // no tessellation
-	//a3f32 const outerLevels[4] = { 1.0f, 1.0f, 1.0f, 0.0f }, innerLevels[2] = { 2.0f, 0.0f }; // create vertex at center
-	//a3f32 const outerLevels[4] = { 2.0f, 2.0f, 2.0f, 0.0f }, innerLevels[2] = { 3.0f, 0.0f }; // create triangle at center, half edges
-
-	if (drawable)
-	{
-		// set patch info
-		glPatchParameteri(GL_PATCH_VERTICES, 3);
-		//glPatchParameterfv(GL_PATCH_DEFAULT_OUTER_LEVEL, outerLevels);
-		//glPatchParameterfv(GL_PATCH_DEFAULT_INNER_LEVEL, innerLevels);
-
-		// draw
-		glBindVertexArray(drawable->vertexArray->handle->handle);
-		if (drawable->indexType)
-		{
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, drawable->indexBuffer->handle->handle);
-			glDrawElements(GL_PATCHES, drawable->count, drawable->indexType, drawable->indexing);
-		}
-		else
-			glDrawArrays(GL_PATCHES, drawable->first, drawable->count);
-		return 1;
-	}
-	return -1;
-}
-typedef a3ret(*a3_VertexDrawableRenderFunc)(a3_VertexDrawable const* drawable);
-
-
-//-----------------------------------------------------------------------------
-
 // sub-routine for rendering the demo state using the shading pipeline
-void a3curves_render(a3_DemoState const* demoState, a3_DemoMode3_Curves const* demoMode, a3f64 const dt)
+void a3animate_render(a3_DemoState const* demoState, a3_DemoMode4_Animate const* demoMode, a3f64 const dt)
 {
 	// pointers
 	const a3_DemoStateShaderProgram* currentDemoProgram;
@@ -216,40 +165,36 @@ void a3curves_render(a3_DemoState const* demoState, a3_DemoMode3_Curves const* d
 	const a3_SceneObjectComponent* currentSceneObject, * endSceneObject;
 
 	// temp drawable pointers
-	const a3_VertexDrawable* drawable[curvesMaxCount_sceneObject] = {
+	const a3_VertexDrawable* drawable[animateMaxCount_sceneObject] = {
 		0,								// root
 		0,								// light
 		0,								// camera
-		0,								// curve
 		demoState->draw_unit_box,		// skybox
-		demoState->draw_unit_sphere,	// objects
-		demoState->draw_teapot,
+		0,
+		demoState->draw_teapot_morph,
 		demoState->draw_unit_plane_z,
 	};
 
 	// textures (diffuse, specular, normal, height)
-	const a3_Texture* const* textureSet[curvesMaxCount_sceneObject] = {
+	const a3_Texture* const* textureSet[animateMaxCount_sceneObject] = {
 		0, 0, 0, 0, 0,
-		demoState->texSet_earth,	// sphere
 		demoState->texSet_stone,	// teapot
 		demoState->texSet_stone,	// ground
 	};
 
 	// height map scale
-	const a3f32 htScale[curvesMaxCount_sceneObject] = {
+	const a3f32 htScale[animateMaxCount_sceneObject] = {
 		0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-		0.005f,	// sphere
 		0.010f,	// teapot
 		0.015f,	// ground
 	};
 	// tessellation levels
-	const a3f32 tessLevel[curvesMaxCount_sceneObject][4] = {
+	const a3f32 tessLevel[animateMaxCount_sceneObject][4] = {
 		{ 0.0f, 0.0f, 0.0f, 0.0f },
 		{ 0.0f, 0.0f, 0.0f, 0.0f },
 		{ 0.0f, 0.0f, 0.0f, 0.0f },
 		{ 0.0f, 0.0f, 0.0f, 0.0f },
 		{ 0.0f, 0.0f, 0.0f, 0.0f },
-		{ 7.0f, 7.0f, 7.0f, 8.0f },
 		{ 2.0f, 2.0f, 2.0f, 3.0f },
 		{ 4.0f, 4.0f, 4.0f, 5.0f },
 	}, tessLevelCurve[1][2] = {
@@ -257,49 +202,41 @@ void a3curves_render(a3_DemoState const* demoState, a3_DemoMode3_Curves const* d
 	};
 
 	// forward pipeline shader programs
-	const a3_DemoStateShaderProgram* renderProgram[curves_renderMode_max] = {
-		demoState->prog_drawPhongNM_ubo,
-		demoState->prog_drawPhongPOM,
-		demoState->prog_drawPhongLOD,
+	const a3_DemoStateShaderProgram* renderProgram[animate_renderMode_max][animateMaxCount_sceneObject] = {
+		{
+			0, 0, 0, 0, 0,
+			demoState->prog_drawPhongPOM_morph,
+			demoState->prog_drawPhongPOM,
+		},
 	};
 	// overlay shader programs
-	const a3_DemoStateShaderProgram* overlayProgram[curves_renderMode_max] = {
-		demoState->prog_drawTangentBasisPOM,
-		demoState->prog_drawTangentBasisPOM,
-		demoState->prog_drawTangentBasisLOD,
-	};
-	// drawable render function
-	const a3_VertexDrawableRenderFunc renderFunc[curves_renderMode_max] = {
-		a3vertexDrawableActivateAndRender,
-		a3vertexDrawableActivateAndRender,
-		a3vertexDrawableRenderTriPatches,
+	const a3_DemoStateShaderProgram* overlayProgram[animate_renderMode_max][animateMaxCount_sceneObject] = {
+		{
+			0, 0, 0, 0, 0,
+			demoState->prog_drawTangentBasisPOM_morph,
+			demoState->prog_drawTangentBasisPOM,
+		},
 	};
 	// lights
-	const a3ui32 renderModeLightCount[curves_renderMode_max] = {
-		curvesMaxCount_pointLight,
-		curvesMaxCount_pointLight,
-		curvesMaxCount_pointLight,
+	const a3ui32 renderModeLightCount[animate_renderMode_max] = {
+		animateMaxCount_pointLight,
 	};
 
 	// framebuffer target for each pass
-	const a3_Framebuffer* writeFBO[curves_renderPass_max] = {
+	const a3_Framebuffer* writeFBO[animate_renderPass_max] = {
 		demoState->fbo_c16x4_d24s8,			// scene
 		demoState->fbo_c16x4,				// composite
 	};
 
 	// target info
-	a3_DemoMode3_Curves_RenderMode const renderMode = demoMode->renderMode;
-	a3_DemoMode3_Curves_RenderPipeline const renderPipeline = demoMode->renderPipeline;
-	a3_DemoMode3_Curves_RenderPass const renderPass = demoMode->renderPass;
-	a3_DemoMode3_Curves_RenderTarget const renderTarget = demoMode->renderTarget[renderPass],
+	a3_DemoMode4_Animate_RenderMode const renderMode = demoMode->renderMode;
+	a3_DemoMode4_Animate_RenderPipeline const renderPipeline = demoMode->renderPipeline;
+	a3_DemoMode4_Animate_RenderPass const renderPass = demoMode->renderPass;
+	a3_DemoMode4_Animate_RenderTarget const renderTarget = demoMode->renderTarget[renderPass],
 		renderTargetCount = demoMode->renderTargetCount[renderPass];
-
-	// model drawing function
-	a3_VertexDrawableRenderFunc const a3vertexDrawableRender = renderFunc[renderMode];
 
 	// final model matrix and full matrix stack
 	a3mat4 projectionMat = activeCamera->projectorMatrixStackPtr->projectionMat;
-	a3mat4 projectionMatInv = activeCamera->projectorMatrixStackPtr->projectionMatInverse;
 	a3mat4 viewProjectionMat = activeCamera->projectorMatrixStackPtr->viewProjectionMat;
 	a3mat4 modelMat, modelViewProjectionMat;
 
@@ -311,6 +248,9 @@ void a3curves_render(a3_DemoState const* demoState, a3_DemoMode3_Curves const* d
 		0.0f, 0.0f, 0.0f, 1.0f
 	};
 
+	// keyframe interpolation parameter for morphing
+	const a3f32 keyframeTime = (a3f32)demoMode->animMorphTeapot->index + demoMode->animMorphTeapot->param;
+
 
 	//-------------------------------------------------------------------------
 	// 1) SCENE PASS: render scene with desired shader
@@ -321,7 +261,7 @@ void a3curves_render(a3_DemoState const* demoState, a3_DemoMode3_Curves const* d
 	//		- capture color and depth
 
 	// bind scene FBO
-	currentWriteFBO = writeFBO[curves_renderPassScene]; //demoState->fbo_c16x4_d24s8
+	currentWriteFBO = writeFBO[animate_renderPassScene]; //demoState->fbo_c16x4_d24s8
 	a3framebufferActivate(currentWriteFBO);
 
 	// clear buffers
@@ -331,45 +271,38 @@ void a3curves_render(a3_DemoState const* demoState, a3_DemoMode3_Curves const* d
 	//if (demoState->stencilTest)
 	//	a3demo_drawStencilTest(modelViewProjectionMat.m, viewProjectionMat.m, modelMat.m, demoState->prog_drawColorUnif, demoState->draw_unit_sphere);
 
-	// select program based on settings
-	currentDemoProgram = renderProgram[renderMode];
-	a3shaderProgramActivate(currentDemoProgram->program);
-
-	// send shared data: 
-	//	- projection matrix
-	//	- light data
-	//	- activate shared textures including atlases if using
-	//	- shared animation data
-	a3shaderUniformSendFloatMat(a3unif_mat4, 0, currentDemoProgram->uP, 1, projectionMat.mm);
-	a3shaderUniformSendFloatMat(a3unif_mat4, 0, currentDemoProgram->uP_inv, 1, projectionMatInv.mm);
-	a3shaderUniformSendFloatMat(a3unif_mat4, 0, currentDemoProgram->uAtlas, 1, a3mat4_identity.mm);
-	a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uColor0, hueCount, rgba4->v);
-	if (demoState->updateAnimation)
-		a3shaderUniformSendDouble(a3unif_single, currentDemoProgram->uTime, 1, &demoState->timer_display->totalTime);
-
-	// send lighting uniforms and bind blocks where appropriate
-	a3shaderUniformBufferActivate(demoState->ubo_transform, demoProg_blockTransformStack);
-	a3shaderUniformBufferActivate(demoState->ubo_light, demoProg_blockLight);
-	a3shaderUniformSendInt(a3unif_single, currentDemoProgram->uCount, 1, renderModeLightCount + renderMode);
-
 	// select pipeline algorithm
 	glDisable(GL_BLEND);
 
 	// forward shading algorithms
-	for (currentSceneObject = demoMode->obj_sphere, endSceneObject = demoMode->obj_ground;
+	for (currentSceneObject = demoMode->obj_teapot, endSceneObject = demoMode->obj_ground;
 		currentSceneObject <= endSceneObject; ++currentSceneObject)
 	{
 		// send index as uniform and draw; all other model data is shared
 		j = currentSceneObject->sceneHierarchyIndex;
+
+		// select program based on settings
+		currentDemoProgram = renderProgram[renderMode][j];
+		a3shaderProgramActivate(currentDemoProgram->program);
+
+		// send lighting uniforms and bind blocks where appropriate
+		a3shaderUniformBufferActivate(demoState->ubo_transform, demoProg_blockTransformStack);
+		a3shaderUniformBufferActivate(demoState->ubo_light, demoProg_blockLight);
+		a3shaderUniformSendInt(a3unif_single, currentDemoProgram->uCount, 1, renderModeLightCount + renderMode);
+
+		// animation
+		a3shaderUniformSendFloat(a3unif_single, currentDemoProgram->uTime, 1, &keyframeTime);
+
+		// textures
 		a3textureActivate(textureSet[j][0], a3tex_unit00);
 		a3textureActivate(textureSet[j][1], a3tex_unit01);
 		a3textureActivate(textureSet[j][2], a3tex_unit02);
 		a3textureActivate(textureSet[j][3], a3tex_unit03);
-		a3shaderUniformSendFloat(a3unif_vec3, currentDemoProgram->uLevelOuter, 1, tessLevel[j]);
-		a3shaderUniformSendFloat(a3unif_single, currentDemoProgram->uLevelInner, 1, tessLevel[j] + 3);
 		a3shaderUniformSendFloat(a3unif_single, currentDemoProgram->uSize, 1, htScale + j);
+
+		// draw
 		a3shaderUniformSendInt(a3unif_single, currentDemoProgram->uIndex, 1, &j);
-		a3vertexDrawableRender(drawable[j]);
+		a3vertexDrawableActivateAndRender(drawable[j]);
 	}
 
 	// stop using stencil
@@ -383,7 +316,7 @@ void a3curves_render(a3_DemoState const* demoState, a3_DemoMode3_Curves const* d
 	//	- draw background if applicable
 
 	// skybox
-	currentWriteFBO = writeFBO[curves_renderPassComposite];
+	currentWriteFBO = writeFBO[animate_renderPassComposite];
 	a3framebufferActivate(currentWriteFBO);
 	if (demoState->displaySkybox)
 	{
@@ -401,7 +334,7 @@ void a3curves_render(a3_DemoState const* demoState, a3_DemoMode3_Curves const* d
 
 	switch (renderPipeline)
 	{
-	case curves_renderPipeForward:
+	case animate_renderPipeForward:
 		// forward shading
 		//	- paste scene image in front of skybox
 		currentDemoProgram = demoState->prog_drawTexture;
@@ -450,13 +383,13 @@ void a3curves_render(a3_DemoState const* demoState, a3_DemoMode3_Curves const* d
 	// select output to display
 	switch (renderPass)
 	{
-	case curves_renderPassScene:
+	case animate_renderPassScene:
 		if (currentDisplayFBO->color && (!currentDisplayFBO->depthStencil || renderTarget < renderTargetCount - 1))
 			a3framebufferBindColorTexture(currentDisplayFBO, a3tex_unit00, renderTarget);
 		else
 			a3framebufferBindDepthTexture(currentDisplayFBO, a3tex_unit00);
 		break;
-	case curves_renderPassComposite:
+	case animate_renderPassComposite:
 		a3framebufferBindColorTexture(currentDisplayFBO, a3tex_unit00, renderTarget);
 		break;
 	}
@@ -499,15 +432,6 @@ void a3curves_render(a3_DemoState const* demoState, a3_DemoMode3_Curves const* d
 		{
 			// actual grid
 			a3demo_drawModelSolidColor(modelViewProjectionMat.m, viewProjectionMat.m, a3mat4_identity.m, demoState->prog_drawColorUnif, demoState->draw_grid, blue);
-
-			// curve
-			currentDemoProgram = demoState->prog_drawCurvePath;
-			a3shaderProgramActivate(currentDemoProgram->program);
-			a3shaderUniformBufferActivate(demoState->ubo_curve, demoProg_blockCurve);
-			a3shaderUniformSendFloatMat(a3unif_mat4, 0, currentDemoProgram->uP, 1, viewProjectionMat.mm);
-			a3shaderUniformSendFloat(a3unif_vec2, currentDemoProgram->uLevelOuter, 1, tessLevelCurve[0]);
-			a3shaderUniformSendInt(a3unif_single, currentDemoProgram->uCount, 1, &demoMode->curveWaypointCount);
-			a3vertexDrawableRenderIsoPatches(demoMode->curveWaypointCount);
 		}
 
 		if (demoState->displayTangentBases || demoState->displayWireframe)
@@ -515,31 +439,32 @@ void a3curves_render(a3_DemoState const* demoState, a3_DemoMode3_Curves const* d
 			const a3i32 flag[1] = { demoState->displayTangentBases * 3 + demoState->displayWireframe * 4 };
 			const a3f32 size[1] = { 0.0625f };
 
-			currentDemoProgram = overlayProgram[renderMode];
-			a3shaderProgramActivate(currentDemoProgram->program);
-
-			// send lighting uniforms and bind blocks where appropriate
-			a3shaderUniformBufferActivate(demoState->ubo_transform, demoProg_blockTransformStack);
-			// projection matrix
-			a3shaderUniformSendFloatMat(a3unif_mat4, 0, currentDemoProgram->uP, 1, projectionMat.mm);
-			// wireframe color
-			a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uColor0, hueCount, rgba4->v);
-			// blend color
-			a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uColor, 1, a3vec4_one.v);
-			// tangent basis size
-			a3shaderUniformSendFloat(a3unif_single, currentDemoProgram->uSize, 1, size);
-			// overlay flag
-			a3shaderUniformSendInt(a3unif_single, currentDemoProgram->uFlag, 1, flag);
-
-			for (currentSceneObject = demoMode->obj_sphere, endSceneObject = demoMode->obj_ground;
+			for (currentSceneObject = demoMode->obj_teapot, endSceneObject = demoMode->obj_ground;
 				currentSceneObject <= endSceneObject; ++currentSceneObject)
 			{
 				j = currentSceneObject->sceneHierarchyIndex;
-				a3textureActivate(textureSet[j][3], a3tex_unit03);
-				a3shaderUniformSendFloat(a3unif_vec3, currentDemoProgram->uLevelOuter, 1, tessLevel[j]);
-				a3shaderUniformSendFloat(a3unif_single, currentDemoProgram->uLevelInner, 1, tessLevel[j] + 3);
+				currentDemoProgram = overlayProgram[renderMode][j];
+				a3shaderProgramActivate(currentDemoProgram->program);
+
+				// send lighting uniforms and bind blocks where appropriate
+				a3shaderUniformBufferActivate(demoState->ubo_transform, demoProg_blockTransformStack);
+				// projection matrix
+				a3shaderUniformSendFloatMat(a3unif_mat4, 0, currentDemoProgram->uP, 1, projectionMat.mm);
+				// wireframe color
+				a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uColor0, hueCount, rgba4->v);
+				// blend color
+				a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uColor, 1, a3vec4_one.v);
+				// tangent basis size
+				a3shaderUniformSendFloat(a3unif_single, currentDemoProgram->uSize, 1, size);
+				// overlay flag
+				a3shaderUniformSendInt(a3unif_single, currentDemoProgram->uFlag, 1, flag);
+
+				// animation
+				a3shaderUniformSendFloat(a3unif_single, currentDemoProgram->uTime, 1, &keyframeTime);
+
+				// draw
 				a3shaderUniformSendInt(a3unif_single, currentDemoProgram->uIndex, 1, &j);
-				a3vertexDrawableRender(drawable[j]);
+				a3vertexDrawableActivateAndRender(drawable[j]);
 			}
 		}
 
@@ -567,11 +492,37 @@ void a3curves_render(a3_DemoState const* demoState, a3_DemoMode3_Curves const* d
 		a3shaderProgramActivate(currentDemoProgram->program);
 		a3vertexDrawableActivate(demoState->draw_unit_sphere);
 		a3real4x4SetScale(modelMat.m, 0.25f);
-		for (i = 0; i < curvesMaxCount_pointLight; ++i)
+		for (i = 0; i < animateMaxCount_pointLight; ++i)
 		{
 			modelMat.v3 = demoMode->pointLightData[i].worldPos;
 			a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uColor, 1, demoMode->pointLightData[i].color.v);
 			a3demo_drawModelSimple(modelViewProjectionMat.m, viewProjectionMat.m, modelMat.m, currentDemoProgram);
+		}
+
+		// skeleton
+		currentDemoProgram = demoState->prog_drawColorHierarchy_instanced;
+		a3shaderProgramActivate(currentDemoProgram->program);
+		a3vertexDrawableActivate(demoState->draw_edge);
+		a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uColor0, hueCount, rgba4->v);
+		a3shaderUniformBufferActivate(demoState->ubo_mvp, demoProg_blockTransformStack);
+		a3vertexDrawableRenderActiveInstanced(demoMode->hierarchy_skel->numNodes);
+
+		// joints
+		currentDemoProgram = demoState->prog_drawColorUnif_instanced;
+		a3shaderProgramActivate(currentDemoProgram->program);
+		a3vertexDrawableActivate(demoState->draw_node);
+		a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uColor, 1, magenta);
+		a3shaderUniformBufferActivate(demoState->ubo_mvp + 1, demoProg_blockTransformStack);
+		a3vertexDrawableRenderActiveInstanced(demoMode->hierarchy_skel->numNodes);
+
+		// skeleton joint axes
+		if (demoState->displayObjectAxes)
+		{
+			currentDemoProgram = demoState->prog_drawColorAttrib_instanced;
+			a3shaderProgramActivate(currentDemoProgram->program);
+			a3vertexDrawableActivate(demoState->draw_axes);
+			a3shaderUniformBufferActivate(demoState->ubo_mvp + 1, demoProg_blockTransformStack);
+			a3vertexDrawableRenderActiveInstanced(demoMode->hierarchy_skel->numNodes);
 		}
 	}
 
@@ -592,7 +543,7 @@ void a3curves_render(a3_DemoState const* demoState, a3_DemoMode3_Curves const* d
 	// individual objects (based on scene graph)
 	if (demoState->displayObjectAxes)
 	{
-		for (currentSceneObject = demoMode->obj_sphere, endSceneObject = demoMode->obj_ground;
+		for (currentSceneObject = demoMode->obj_skeleton, endSceneObject = demoMode->obj_ground;
 			currentSceneObject <= endSceneObject; ++currentSceneObject)
 		{
 			j = currentSceneObject->sceneHierarchyIndex;

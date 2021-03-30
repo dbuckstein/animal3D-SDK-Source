@@ -1,5 +1,5 @@
 /*
-	Copyright 2011-2021 Daniel S. Buckstein
+	Copyright 2011-2020 Daniel S. Buckstein
 
 	Licensed under the Apache License, Version 2.0 (the "License");
 	you may not use this file except in compliance with the License.
@@ -25,6 +25,11 @@
 #version 450
 
 layout (location = 0) in vec4 aPosition;
+layout (location = 3) in vec4 aColor;
+
+uniform mat4 uMVP;
+
+out vec4 vColor;
 
 flat out int vVertexID;
 flat out int vInstanceID;
@@ -32,7 +37,10 @@ flat out int vInstanceID;
 void main()
 {
 	// DUMMY OUTPUT: directly assign input position to output position
-	gl_Position = aPosition;
+//	gl_Position = aPosition;
+	gl_Position = uMVP * aPosition;
+	
+	vColor = aColor;
 
 	vVertexID = gl_VertexID;
 	vInstanceID = gl_InstanceID;

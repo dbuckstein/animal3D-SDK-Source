@@ -53,13 +53,37 @@ void a3curves_update_animation(a3_DemoState* demoState, a3_DemoMode3_Curves* dem
 	{
 		a3_SceneObjectData* sceneObjectData = demoMode->obj_teapot->dataPtr;
 
-		// ****TO-DO: 
-		//	-> interpolate teapot's position using algorithm that matches path drawn
-		//		(hint: use the one that looks the best)
-		//	-> update the animation timer
-		//		(hint: check if we've surpassed the segment's duration)
 		// teapot follows curved path
+		a3ui32 const i0 = demoMode->curveSegmentIndex,
+			i1 = (i0 + 1) % demoMode->curveWaypointCount,
+			iN = (i1 + 1) % demoMode->curveWaypointCount,
+			iP = (i0 + demoMode->curveWaypointCount - 1) % demoMode->curveWaypointCount;
+		
+		//a3real3Lerp(sceneObjectData->position.v,
+		//	demoMode->curveWaypoint[i0].v,
+		//	demoMode->curveWaypoint[i1].v,
+		//	demoMode->curveSegmentParam);
+		a3real3CatmullRom(sceneObjectData->position.v,
+			demoMode->curveWaypoint[iP].v,
+			demoMode->curveWaypoint[i0].v,
+			demoMode->curveWaypoint[i1].v,
+			demoMode->curveWaypoint[iN].v,
+			demoMode->curveSegmentParam);
+		//a3real3HermiteTangent(sceneObjectData->position.v,
+		//	demoMode->curveWaypoint[i0].v,
+		//	demoMode->curveTangent[i0].v,
+		//	demoMode->curveWaypoint[i1].v,
+		//	demoMode->curveTangent[i1].v,
+		//	demoMode->curveSegmentParam);
 
+		// update timer
+		demoMode->curveSegmentTime += (a3f32)dt;
+		if (demoMode->curveSegmentTime >= demoMode->curveSegmentDuration)
+		{
+			demoMode->curveSegmentTime -= demoMode->curveSegmentDuration;
+			demoMode->curveSegmentIndex = (demoMode->curveSegmentIndex + 1) % demoMode->curveWaypointCount;
+		}
+		demoMode->curveSegmentParam = demoMode->curveSegmentTime * demoMode->curveSegmentDurationInv;
 	}
 }
 

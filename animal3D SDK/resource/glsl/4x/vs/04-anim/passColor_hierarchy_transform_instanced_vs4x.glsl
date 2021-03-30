@@ -18,19 +18,37 @@
 	animal3D SDK: Minimal 3D Animation Framework
 	By Daniel S. Buckstein
 	
-	drawColorUnif_fs4x.glsl
-	Draw uniform solid color.
+	passColor_hierarchy_transform_instanced_vs4x.glsl
+	Transform position attribute for instance and pass hierarchical color.
 */
 
 #version 450
 
-uniform vec4 uColor;
+#define MAX_INSTANCES 128
 
-layout (location = 0) out vec4 rtFragColor;
+#define MAX_COLORS 24
+
+layout (location = 0) in vec4 aPosition;
+
+uniform ubTransformMVP {
+	mat4 uMVP[MAX_INSTANCES];
+};
+
+uniform vec4 uColor0[MAX_COLORS];
+
+out vec4 vColor;
+
+flat out int vVertexID;
+flat out int vInstanceID;
 
 void main()
 {
-	// DUMMY OUTPUT: all fragments are OPAQUE RED
-//	rtFragColor = vec4(1.0, 0.0, 0.0, 1.0);
-	rtFragColor = uColor;
+	// DUMMY OUTPUT: directly assign input position to output position
+//	gl_Position = aPosition;
+	gl_Position = uMVP[gl_InstanceID] * aPosition;
+	
+	vColor = uColor0[gl_InstanceID];
+
+	vVertexID = gl_VertexID;
+	vInstanceID = gl_InstanceID;
 }

@@ -60,6 +60,9 @@ void a3ssfx_render_controls(a3_DemoState const* demoState, a3_DemoMode2_SSFX con
 void a3curves_render_controls(a3_DemoState const* demoState, a3_DemoMode3_Curves const* demoMode,
 	a3_TextRenderer const* text, a3vec4 const col,
 	a3f32 const textAlign, a3f32 const textDepth, a3f32 const textOffsetDelta, a3f32 textOffset);
+void a3animate_render_controls(a3_DemoState const* demoState, a3_DemoMode4_Animate const* demoMode,
+	a3_TextRenderer const* text, a3vec4 const col,
+	a3f32 const textAlign, a3f32 const textDepth, a3f32 const textOffsetDelta, a3f32 textOffset);
 
 
 // display current mode controls
@@ -102,6 +105,7 @@ void a3demo_render_controls(a3_DemoState const* demoState,
 		"POST-PROCESSING SCENE",
 		"SCREEN-SPACE EFFECTS SCENE",
 		"CURVE PATH EDITOR SCENE",
+		"ANIMATION OBJECTS SCENE",
 	};
 
 	// demo mode
@@ -128,6 +132,10 @@ void a3demo_render_controls(a3_DemoState const* demoState,
 		break;
 	case demoState_modeCurves:
 		a3curves_render_controls(demoState, demoState->demoMode3,
+			text, col, textAlign, textDepth, textOffsetDelta, textOffset);
+		break;
+	case demoState_modeAnimate:
+		a3animate_render_controls(demoState, demoState->demoMode4,
 			text, col, textAlign, textDepth, textOffsetDelta, textOffset);
 		break;
 	}

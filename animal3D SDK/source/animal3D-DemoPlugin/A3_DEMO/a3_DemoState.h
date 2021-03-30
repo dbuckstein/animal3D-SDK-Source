@@ -47,6 +47,7 @@
 #include "a3_DemoMode1_PostProc.h"
 #include "a3_DemoMode2_SSFX.h"
 #include "a3_DemoMode3_Curves.h"
+#include "a3_DemoMode4_Animate.h"
 
 
 //-----------------------------------------------------------------------------
@@ -71,6 +72,7 @@ enum a3_DemoState_ModeName
 	demoState_modePostProc,			// post-processing scene
 	demoState_modeSSFX,				// screen-space effects scene
 	demoState_modeCurves,			// curve editor scene
+	demoState_modeAnimate,			// animation scene
 
 	demoState_mode_max
 };
@@ -174,6 +176,7 @@ struct a3_DemoState
 	a3_DemoMode1_PostProc demoMode1[1];
 	a3_DemoMode2_SSFX demoMode2[1];
 	a3_DemoMode3_Curves demoMode3[1];
+	a3_DemoMode4_Animate demoMode4[1];
 	a3_DemoState_ModeName demoMode;
 	a3_DemoModeCallbacks demoModeCallbacks[demoState_mode_max];
 	a3_DemoModeCallbacks const* demoModeCallbacksPtr;
@@ -226,7 +229,7 @@ struct a3_DemoState
 		struct {
 			a3_VertexArrayDescriptor
 				vao_tangentbasis_texcoord[1],				// VAO for vertex format with complete tangent basis, with texcoords
-				vao_position_normal_texcoord[1];			// VAO for vertex format with complete tangent basis, with texcoords
+				vao_tangentbasis_texcoord_morph[1];			// VAO for morphing tangent basis and texcoord
 			a3_VertexArrayDescriptor
 				vao_position_color[1],						// VAO for vertex format with position and color
 				vao_position[1];							// VAO for vertex format with only position
@@ -250,6 +253,10 @@ struct a3_DemoState
 				draw_unit_plane_z[1];						// unit plane (width = height = 1) with Z normal
 			a3_VertexDrawable
 				draw_teapot[1];								// can't not have a Utah teapot
+			a3_VertexDrawable
+				draw_node[1],								// simple primitive for hierarchical node/joint
+				draw_edge[1],								// simple primitive for hierarchical edge/bone
+				draw_teapot_morph[1];						// can't not have a morphing Utah teapot
 		};
 	};
 
@@ -294,6 +301,10 @@ struct a3_DemoState
 				prog_drawTangentBasisLOD[1],				// draw tangent basis and wireframe with LOD height
 				prog_drawPhongPOM[1],						// draw Phong with parallax occlusion mapping (POM)
 				prog_drawPhongLOD[1];						// draw Phong with level-of-detail (LOD) tessellation
+			a3_DemoStateShaderProgram
+				prog_drawTangentBasisPOM_morph[1],			// draw tangent basis and wireframe for morphing POM objects
+				prog_drawPhongPOM_morph[1],					// draw Phong for morphing POM objects
+				prog_drawColorHierarchy_instanced[1];		// draw color based on hierarchical index
 		};
 	};
 
@@ -302,10 +313,10 @@ struct a3_DemoState
 		a3_UniformBuffer uniformBuffer[demoStateMaxCount_uniformBuffer];
 		struct {
 			a3_UniformBuffer
-				ubo_curve[1],								// uniform buffer for curve data
-				ubo_light[1],								// uniform buffer for light data
-				ubo_mvp[1],									// uniform buffer for mvp matrices only
-				ubo_transform[1];							// uniform buffer for transformation data
+				ubo_curve[2],								// uniform buffer for curve data
+				ubo_light[2],								// uniform buffer for light data
+				ubo_mvp[2],									// uniform buffer for mvp matrices only
+				ubo_transform[2];							// uniform buffer for transformation data
 		};
 	};
 
@@ -355,10 +366,6 @@ struct a3_DemoState
 				fbo_c16x4_d24s8[1];		// 16-bit color buffer (4 targets) and depth-stencil buffer (24/8)
 		};
 	};
-
-
-	// managed objects, no touchie
-	a3_VertexDrawable dummyDrawable[1];
 
 
 	//-------------------------------------------------------------------------
