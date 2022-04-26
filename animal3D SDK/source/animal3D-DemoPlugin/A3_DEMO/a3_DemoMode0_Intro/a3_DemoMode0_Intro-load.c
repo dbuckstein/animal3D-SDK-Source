@@ -120,6 +120,9 @@ void a3intro_load(a3_DemoState const* demoState, a3_DemoMode0_Intro* demoMode)
 	const a3f32 sceneObjectHeight = 2.0f;
 
 
+	// initial mode
+	demoMode->renderMode = intro_renderModePhong;
+
 	// set up scene hierarchy and scene objects
 	a3hierarchyCreate(demoMode->hierarchy_scene, introMaxCount_sceneObject, 0);
 

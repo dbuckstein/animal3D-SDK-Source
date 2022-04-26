@@ -185,6 +185,18 @@ void a3intro_render(a3_DemoState const* demoState, a3_DemoMode0_Intro const* dem
 	a3framebufferDeactivateSetViewport(a3fbo_depth24_stencil8,
 		-demoState->frameBorder, -demoState->frameBorder, demoState->frameWidth, demoState->frameHeight);
 
+	// ****TO-DO: 
+	//	-> configure stereo viewport
+	//
+	// | YOUR CODE HERE |
+	// V                V
+	//-----------------------------------------------------------------------------
+	{
+
+	}
+	//-----------------------------------------------------------------------------
+	// ^ YOUR CODE HERE ^
+
 	// clear buffers
 	if (demoState->displaySkybox)
 	{
@@ -226,6 +238,19 @@ void a3intro_render(a3_DemoState const* demoState, a3_DemoMode0_Intro const* dem
 	// ****DONE: 
 	//	-> send lighting uniforms and bind blocks where appropriate
 
+
+	// ****TO-DO: 
+	//	-> recalculate projection matrices for stereo
+	//	-> send stereo projection matrices as uniform
+	//
+	// | YOUR CODE HERE |
+	// V                V
+	//-----------------------------------------------------------------------------
+	{
+
+	}
+	//-----------------------------------------------------------------------------
+	// ^ YOUR CODE HERE ^
 
 	// select pipeline algorithm
 	glDisable(GL_BLEND);
