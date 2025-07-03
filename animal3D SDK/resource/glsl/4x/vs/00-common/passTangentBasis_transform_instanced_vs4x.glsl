@@ -27,6 +27,23 @@
 #define MAX_INSTANCES 64
 
 layout (location = 0) in vec4 aPosition;
+layout (location = 2) in vec4 aNormal;
+layout (location = 8) in vec4 aTexcoord;
+layout (location = 10) in vec4 aTangent;
+layout (location = 11) in vec4 aBitangent;
+
+uniform mat4 uP;
+struct sTransformStack {
+	mat4 mMV, mMV_nrm, mAtlas;
+};
+uniform ubTransformStack {
+	sTransformStack uTransformStack[MAX_INSTANCES];
+};
+
+out vbVertexData {
+	mat4 vTangentBasis_view;
+	vec4 vTexcoord_atlas;
+};
 
 flat out int vVertexID;
 flat out int vInstanceID;
@@ -34,7 +51,14 @@ flat out int vInstanceID;
 void main()
 {
 	// DUMMY OUTPUT: directly assign input position to output position
-	gl_Position = aPosition;
+//	gl_Position = aPosition;
+
+	sTransformStack tstack = uTransformStack[gl_InstanceID];
+	vTangentBasis_view = tstack.mMV_nrm * mat4(aTangent, aBitangent, aNormal, vec4(0.0));
+	vTangentBasis_view[3] = tstack.mMV * aPosition;
+	gl_Position = uP * vTangentBasis_view[3];
+	
+	vTexcoord_atlas = tstack.mAtlas * aTexcoord;
 
 	vVertexID = gl_VertexID;
 	vInstanceID = gl_InstanceID;

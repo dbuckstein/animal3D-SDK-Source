@@ -416,14 +416,15 @@ void a3demo_loadShaders(a3_DemoState *demoState)
 				passTangentBasis_transform_vs[1],
 				passTexcoord_transform_instanced_vs[1],
 				passTangentBasis_transform_instanced_vs[1];
-			// 01-pipeline
+		/*	// 01-pipeline
 			a3_DemoStateShader
 				passTangentBasis_shadowCoord_transform_vs[1],
-				passTangentBasis_shadowCoord_transform_instanced_vs[1];
+				passTangentBasis_shadowCoord_transform_instanced_vs[1];*/
 
 			// geometry shaders
 			// 00-common
 			a3_DemoStateShader
+				passthru_stereo_gs[1],
 				drawTangentBasis_gs[1];
 
 			// fragment shaders
@@ -436,12 +437,12 @@ void a3demo_loadShaders(a3_DemoState *demoState)
 				drawTexture_fs[1],
 				drawLambert_fs[1],
 				drawPhong_fs[1];
-			// 01-pipeline
+		/*	// 01-pipeline
 			a3_DemoStateShader
 				postBright_fs[1],
 				postBlur_fs[1],
 				postBlend_fs[1],
-				drawPhong_shadow_fs[1];
+				drawPhong_shadow_fs[1];*/
 		};
 	} shaderList = {
 		{
@@ -460,12 +461,13 @@ void a3demo_loadShaders(a3_DemoState *demoState)
 			{ { { 0 },	"shdr-vs:pass-tb-trans",			a3shader_vertex  ,	1,{ A3_DEMO_VS"00-common/passTangentBasis_transform_vs4x.glsl" } } },
 			{ { { 0 },	"shdr-vs:pass-tex-trans-inst",		a3shader_vertex  ,	1,{ A3_DEMO_VS"00-common/passTexcoord_transform_instanced_vs4x.glsl" } } },
 			{ { { 0 },	"shdr-vs:pass-tb-trans-inst",		a3shader_vertex  ,	1,{ A3_DEMO_VS"00-common/passTangentBasis_transform_instanced_vs4x.glsl" } } },
-			// 01-pipeline
+		/*	// 01-pipeline
 			{ { { 0 },	"shdr-vs:pass-tb-sc-trans",			a3shader_vertex  ,	1,{ A3_DEMO_VS"01-pipeline/passTangentBasis_shadowCoord_transform_vs4x.glsl" } } }, // ****DECODE
-			{ { { 0 },	"shdr-vs:pass-tb-sc-trans-inst",	a3shader_vertex  ,	1,{ A3_DEMO_VS"01-pipeline/passTangentBasis_shadowCoord_transform_instanced_vs4x.glsl" } } },
+			{ { { 0 },	"shdr-vs:pass-tb-sc-trans-inst",	a3shader_vertex  ,	1,{ A3_DEMO_VS"01-pipeline/passTangentBasis_shadowCoord_transform_instanced_vs4x.glsl" } } },*/
 
 			// gs
 			// 00-common
+			{ { { 0 },	"shdr-gs:passthru-stereo",			a3shader_geometry,	1,{ A3_DEMO_GS"00-common/passthru_stereo_gs4x.glsl" } } },
 			{ { { 0 },	"shdr-gs:draw-tb",					a3shader_geometry,	2,{ A3_DEMO_GS"00-common/drawTangentBasis_gs4x.glsl",
 																					A3_DEMO_GS"00-common/utilCommon_gs4x.glsl",} } },
 
@@ -479,12 +481,12 @@ void a3demo_loadShaders(a3_DemoState *demoState)
 																					A3_DEMO_FS"00-common/utilCommon_fs4x.glsl",} } },
 			{ { { 0 },	"shdr-fs:draw-Phong",				a3shader_fragment,	2,{ A3_DEMO_FS"00-common/drawPhong_fs4x.glsl",
 																					A3_DEMO_FS"00-common/utilCommon_fs4x.glsl",} } },
-			// 01-pipeline
+		/*	// 01-pipeline
 			{ { { 0 },	"shdr-fs:post-bright",				a3shader_fragment,	1,{ A3_DEMO_FS"01-pipeline/postBright_fs4x.glsl" } } }, // ****DECODE
 			{ { { 0 },	"shdr-fs:post-blur",				a3shader_fragment,	1,{ A3_DEMO_FS"01-pipeline/postBlur_fs4x.glsl" } } }, // ****DECODE
 			{ { { 0 },	"shdr-fs:post-blend",				a3shader_fragment,	1,{ A3_DEMO_FS"01-pipeline/postBlend_fs4x.glsl" } } }, // ****DECODE
 			{ { { 0 },	"shdr-fs:draw-Phong-shadow",		a3shader_fragment,	2,{ A3_DEMO_FS"01-pipeline/drawPhong_shadow_fs4x.glsl", // ****DECODE
-																					A3_DEMO_FS"00-common/utilCommon_fs4x.glsl",} } }, // ****DECODE
+																					A3_DEMO_FS"00-common/utilCommon_fs4x.glsl",} } }, // ****DECODE*/
 		}
 	};
 	a3_DemoStateShader *const shaderListPtr = (a3_DemoStateShader *)(&shaderList), *shaderPtr;
@@ -558,24 +560,28 @@ void a3demo_loadShaders(a3_DemoState *demoState)
 	currentDemoProg = demoState->prog_drawLambert;
 	a3shaderProgramCreate(currentDemoProg->program, "prog:draw-Lambert");
 	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.passTangentBasis_transform_vs->shader);
+	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.passthru_stereo_gs->shader);
 	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.drawLambert_fs->shader);
 	// Lambert with instancing
 	currentDemoProg = demoState->prog_drawLambert_instanced;
 	a3shaderProgramCreate(currentDemoProg->program, "prog:draw-Lambert-inst");
 	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.passTangentBasis_transform_instanced_vs->shader);
+	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.passthru_stereo_gs->shader);
 	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.drawLambert_fs->shader);
 	// Phong
 	currentDemoProg = demoState->prog_drawPhong;
 	a3shaderProgramCreate(currentDemoProg->program, "prog:draw-Phong");
 	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.passTangentBasis_transform_vs->shader);
+	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.passthru_stereo_gs->shader);
 	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.drawPhong_fs->shader);
 	// Phong with instancing
 	currentDemoProg = demoState->prog_drawPhong_instanced;
 	a3shaderProgramCreate(currentDemoProg->program, "prog:draw-Phong-inst");
 	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.passTangentBasis_transform_instanced_vs->shader);
+	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.passthru_stereo_gs->shader);
 	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.drawPhong_fs->shader);
 
-	// tangent basis
+/*	// tangent basis
 	currentDemoProg = demoState->prog_drawTangentBasis;
 	a3shaderProgramCreate(currentDemoProg->program, "prog:draw-tb");
 	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.passTangentBasis_transform_vs->shader);
@@ -587,8 +593,8 @@ void a3demo_loadShaders(a3_DemoState *demoState)
 	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.passTangentBasis_transform_instanced_vs->shader);
 	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.drawTangentBasis_gs->shader);
 	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.drawColorAttrib_fs->shader);
-
-	// 01-pipeline programs: 
+*/
+/*	// 01-pipeline programs: 
 	// Phong shading with shadow mapping
 	currentDemoProg = demoState->prog_drawPhong_shadow;
 	a3shaderProgramCreate(currentDemoProg->program, "prog:draw-Phong-shadow");
@@ -614,7 +620,7 @@ void a3demo_loadShaders(a3_DemoState *demoState)
 	a3shaderProgramCreate(currentDemoProg->program, "prog:post-blend");
 	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.passTexcoord_transform_vs->shader);
 	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.postBlend_fs->shader);
-
+*/
 
 	// activate a primitive for validation
 	// makes sure the specified geometry can draw using programs

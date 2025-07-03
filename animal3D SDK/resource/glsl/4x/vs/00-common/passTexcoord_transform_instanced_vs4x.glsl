@@ -26,7 +26,18 @@
 
 #define MAX_INSTANCES 256
 
-layout (location = 0) in vec4 aPosition;
+layout (location = 0)	in vec4 aPosition;
+layout (location = 8)	in vec4 aTexcoord;
+
+struct sTransformStack {
+	mat4 mMVP;
+	mat4 mAtlas;
+};
+uniform ubTransformStack {
+	sTransformStack uTransformStack[MAX_INSTANCES];
+};
+
+out vec4 vTexcoord_atlas;
 
 flat out int vVertexID;
 flat out int vInstanceID;
@@ -34,7 +45,11 @@ flat out int vInstanceID;
 void main()
 {
 	// DUMMY OUTPUT: directly assign input position to output position
-	gl_Position = aPosition;
+//	gl_Position = aPosition;
+	
+	sTransformStack tstack = uTransformStack[gl_InstanceID];
+	vTexcoord_atlas = tstack.mAtlas * aTexcoord;
+	gl_Position = tstack.mMVP * aPosition;
 
 	vVertexID = gl_VertexID;
 	vInstanceID = gl_InstanceID;

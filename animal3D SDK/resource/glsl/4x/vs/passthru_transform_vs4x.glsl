@@ -26,13 +26,16 @@
 
 layout (location = 0) in vec4 aPosition;
 
+uniform mat4 uMVP;
+
 flat out int vVertexID;
 flat out int vInstanceID;
 
 void main()
 {
 	// DUMMY OUTPUT: directly assign input position to output position
-	gl_Position = aPosition;
+//	gl_Position = aPosition;
+	gl_Position = uMVP * aPosition;
 
 	vVertexID = gl_VertexID;
 	vInstanceID = gl_InstanceID;

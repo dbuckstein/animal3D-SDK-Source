@@ -262,5 +262,8 @@
     <None Include="..\..\..\resource\glsl\4x\fs\01-pipeline\postBright_fs4x.glsl">
       <Filter>Resource Files\A3_DEMO\glsl\4x\fs\01-pipeline</Filter>
     </None>
+    <None Include="..\..\..\resource\glsl\4x\gs\00-common\passthru_stereo_gs4x.glsl">
+      <Filter>Resource Files\A3_DEMO\glsl\4x\gs\00-common</Filter>
+    </None>
   </ItemGroup>
 </Project>

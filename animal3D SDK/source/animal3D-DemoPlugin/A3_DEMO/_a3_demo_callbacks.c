@@ -177,13 +177,13 @@ void a3demo_load(a3_DemoState* demoState)
 
 
 	// set flags
-	demoState->displayGrid = a3true;
-	demoState->displayWorldAxes = a3true;
-	demoState->displayObjectAxes = a3true;
+	demoState->displayGrid = a3false;
+	demoState->displayWorldAxes = a3false;
+	demoState->displayObjectAxes = a3false;
 	demoState->displayTangentBases = a3false;
 	demoState->displayWireframe = a3false;
-	demoState->displaySkybox = a3true;
-	demoState->displayHiddenVolumes = a3true;
+	demoState->displaySkybox = a3false;
+	demoState->displayHiddenVolumes = a3false;
 	demoState->updateAnimation = a3true;
 	demoState->stencilTest = a3false;
 	demoState->skipIntermediatePasses = a3false;
@@ -332,7 +332,7 @@ A3DYLIBSYMBOL a3_DemoState *a3demoCB_load(a3_DemoState *demoState, a3boolean hot
 		a3demo_setDefaultGraphicsState();
 
 		// demo modes
-		demoState->demoMode = demoState_modePostProc;
+		demoState->demoMode = demoState_modeIntro;
 		a3demoMode_loadValidate(demoState);
 		a3demo_load(demoState);
 
@@ -446,7 +446,7 @@ A3DYLIBSYMBOL void a3demoCB_windowMove(a3_DemoState *demoState, a3i32 newWindowP
 A3DYLIBSYMBOL void a3demoCB_windowResize(a3_DemoState *demoState, a3i32 newWindowWidth, a3i32 newWindowHeight)
 {
 	// account for borders here
-	const a3i32 frameBorder = 64;
+	const a3i32 frameBorder = 0;
 	const a3ui32 frameWidth = newWindowWidth + frameBorder + frameBorder;
 	const a3ui32 frameHeight = newWindowHeight + frameBorder + frameBorder;
 	const a3real windowAspect = (a3real)newWindowWidth / (a3real)newWindowHeight;
