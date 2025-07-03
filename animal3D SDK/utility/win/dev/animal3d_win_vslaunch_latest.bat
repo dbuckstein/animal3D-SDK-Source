@@ -14,7 +14,7 @@ for %%I in ("%vsdevenv%") do (
 	set a3vstoolsdir="%%~dpI..\Tools\"
 	set a3vslaunchpath="%%~dpI.\devenv"
 )
-set a3platformtoolset=v142
+set a3platformtoolset=v143
 set a3sdkversion=10.0
 
 start "%vsdevenv%" "%tmp_slnpath%"
