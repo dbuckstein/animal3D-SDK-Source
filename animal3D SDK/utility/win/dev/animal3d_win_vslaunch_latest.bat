@@ -17,6 +17,9 @@ for %%I in ("%vsdevenv%") do (
 set a3platformtoolset=v143
 set a3sdkversion=10.0
 
+:: dev sdk submodule
+set "dev_sdk_dir=%animal3d_sdk%deps\DevSDKs\DevSDKs\"
+
 start "%vsdevenv%" "%tmp_slnpath%"
 
 :: unset variables

@@ -1,0 +1,4 @@
+[submodule "DevSDKs"]
+	path = animal3D SDK/deps/DevSDKs
+	url = https://github.com/dbuckstein/DevSDKs-GPRO-2020.git
+	branch = dev-sdks
