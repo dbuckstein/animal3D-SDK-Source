@@ -148,7 +148,7 @@ a3ret a3proceduralInternalGeneratePyramid(a3_GeometryData *geomData, const a3_Pr
 			a3proceduralInternalTransformVectors(positions, numVertices, axis);
 
 			// texture coordinates
-			if (flags & a3geomFlag_texcoords)
+			if ((a3i32)flags & a3geomFlag_texcoords)
 			{
 				const a3f32 texcoordsLocal[] = {
 					// arrangement is diamond shape, needs to be upside-
@@ -190,7 +190,7 @@ a3ret a3proceduralInternalGeneratePyramid(a3_GeometryData *geomData, const a3_Pr
 			}
 
 			// normals
-			if (flags & a3geomFlag_normals)
+			if ((a3i32)flags & a3geomFlag_normals)
 			{
 				// normals by face
 				a3f32 *normalsPtr = normals;
@@ -214,7 +214,7 @@ a3ret a3proceduralInternalGeneratePyramid(a3_GeometryData *geomData, const a3_Pr
 				geomData->attribData[a3attrib_geomNormal] = normals;
 
 				// tangents and bitangents, same algorithm as above
-				if (flags & a3geomFlag_tangentFlag)
+				if ((a3i32)flags & a3geomFlag_tangentFlag)
 				{
 					a3f32 *tangentsPtr = tangents, *bitangentsPtr = bitangents;
 					for (i = 0, tPtr = t, bPtr = b; i < numFaces; ++i, tPtr += vElems, bPtr += vElems)

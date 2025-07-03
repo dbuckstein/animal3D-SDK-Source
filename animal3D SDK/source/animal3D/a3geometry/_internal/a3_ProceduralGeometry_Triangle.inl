@@ -117,7 +117,7 @@ a3ret a3proceduralInternalGenerateTriangle(a3_GeometryData *geomData, const a3_P
 	if (isSolid)
 	{
 		// create texture coordinates (DO NOT TRANSFORM)
-		if (flags & a3geomFlag_texcoords)
+		if ((a3i32)flags & a3geomFlag_texcoords)
 		{
 			const a3f32 texcoordsLocal[] = {
 				0.0f, 0.0f,
@@ -140,7 +140,7 @@ a3ret a3proceduralInternalGenerateTriangle(a3_GeometryData *geomData, const a3_P
 		}
 
 		// create normals
-		if (flags & a3geomFlag_normals)
+		if ((a3i32)flags & a3geomFlag_normals)
 		{
 			const a3f32 normalsLocal[] = {
 				n[0], n[1], n[2],
@@ -154,7 +154,7 @@ a3ret a3proceduralInternalGenerateTriangle(a3_GeometryData *geomData, const a3_P
 		//	a3proceduralInternalTransformVectors(normals, numVerts, axis);
 
 			// create tangents and bitangents
-			if (flags & a3geomFlag_tangentFlag)
+			if ((a3i32)flags & a3geomFlag_tangentFlag)
 			{
 				const a3f32 tangentsLocal[] = {
 					t[0], t[1], t[2],

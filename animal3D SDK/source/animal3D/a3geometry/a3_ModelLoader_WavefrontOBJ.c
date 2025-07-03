@@ -221,8 +221,8 @@ a3ret a3modelInternalLoadOBJ(a3_ModelLoadDataOBJ *obj, FILE *fp, const a3_ModelL
 	a3ui32 numTexcoordElements = 0;
 	a3ui32 numNormalElements = 0;
 	a3ui32 numFaceElements = 0;
-	const a3i32 loadTexcoords = flags & a3model_loadTexcoords;
-	const a3i32 loadNormals = flags & a3model_loadNormals;
+	const a3i32 loadTexcoords = (a3i32)flags & a3model_loadTexcoords;
+	const a3i32 loadNormals = (a3i32)flags & a3model_loadNormals;
 	const a3ui32 positionComponents = 3;
 	const a3ui32 texcoordComponents = loadTexcoords ? 2 : 0;
 	const a3ui32 normalComponents = loadNormals ? 3 : 0;
@@ -697,12 +697,12 @@ a3ret a3modelInternalStore(a3_GeometryData *geom, const a3_ModelLoadDataOBJ *obj
 	a3ui32 numVerticesUnique = 0;
 
 	// calculate normal and tangent flags
-	const a3i32 calcFaceNormals = (flags & a3model_calculateFaceNormals);
-	const a3i32 calcFaceTangents = (flags & a3model_internalFaceTangentFlag);
-	const a3i32 calcVertNormals = (flags & a3model_internalVertexNormalFlag);
-	const a3i32 calcVertTangents = (flags & a3model_internalVertexTangentFlag);
-	const a3i32 useTexcoords = (flags & a3model_loadTexcoords) && obj->numTexcoords;
-	const a3i32 useNormals = (flags & a3model_loadNormals) && obj->numNormals && !calcFaceNormals;
+	const a3i32 calcFaceNormals = ((a3i32)flags & a3model_calculateFaceNormals);
+	const a3i32 calcFaceTangents = ((a3i32)flags & a3model_internalFaceTangentFlag);
+	const a3i32 calcVertNormals = ((a3i32)flags & a3model_internalVertexNormalFlag);
+	const a3i32 calcVertTangents = ((a3i32)flags & a3model_internalVertexTangentFlag);
+	const a3i32 useTexcoords = ((a3i32)flags & a3model_loadTexcoords) && obj->numTexcoords;
+	const a3i32 useNormals = ((a3i32)flags & a3model_loadNormals) && obj->numNormals && !calcFaceNormals;
 
 
 	// iterators

@@ -143,19 +143,19 @@ a3ret a3proceduralInternalGenerateCylinder(a3_GeometryData *geomData, const a3_P
 		// bottom
 		a3proceduralInternalCircleGenerateAlgorithm(
 			positions,
-			(flags & a3geomFlag_texcoords ? texcoords : 0),
-			(flags & a3geomFlag_normals ? normals : 0),
-			(flags & a3geomFlag_tangentFlag ? tangents : 0),
-			(flags & a3geomFlag_tangentFlag ? bitangents : 0),
+			((a3i32)flags & a3geomFlag_texcoords ? texcoords : 0),
+			((a3i32)flags & a3geomFlag_normals ? normals : 0),
+			((a3i32)flags & a3geomFlag_tangentFlag ? tangents : 0),
+			((a3i32)flags & a3geomFlag_tangentFlag ? bitangents : 0),
 			indices,
 			radius, slices, subdivsBase, 0.0f, 0.0f, -halfLength, 0.75f, 0.15f, 0.15f, baseVerts, baseInds, indexSize, 0, isSolid, 1
 		);
 		// top
 		a3proceduralInternalCircleGenerateAlgorithm(positions + baseVertsOffset + bodyVertsOffset,
-			(flags & a3geomFlag_texcoords ? texcoords + (baseVerts + bodyVerts) * tElems : 0),
-			(flags & a3geomFlag_normals ? normals + baseVertsOffset + bodyVertsOffset : 0),
-			(flags & a3geomFlag_tangentFlag ? tangents + baseVertsOffset + bodyVertsOffset : 0),
-			(flags & a3geomFlag_tangentFlag ? bitangents + baseVertsOffset + bodyVertsOffset : 0),
+			((a3i32)flags & a3geomFlag_texcoords ? texcoords + (baseVerts + bodyVerts) * tElems : 0),
+			((a3i32)flags & a3geomFlag_normals ? normals + baseVertsOffset + bodyVertsOffset : 0),
+			((a3i32)flags & a3geomFlag_tangentFlag ? tangents + baseVertsOffset + bodyVertsOffset : 0),
+			((a3i32)flags & a3geomFlag_tangentFlag ? bitangents + baseVertsOffset + bodyVertsOffset : 0),
 			indices + baseIndsOffset + bodyIndsOffset,
 			radius, slices, subdivsBase, 0.0f, 0.0f, +halfLength, 0.75f, 0.85f, 0.15f, baseVerts, baseInds, indexSize, baseVerts + bodyVerts, isSolid, 0
 		);
@@ -187,7 +187,7 @@ a3ret a3proceduralInternalGenerateCylinder(a3_GeometryData *geomData, const a3_P
 
 
 		// texcoords
-		if (flags & a3geomFlag_texcoords)
+		if ((a3i32)flags & a3geomFlag_texcoords)
 		{
 			// body: grid
 			attribItr = texcoords + baseVerts * tElems;
@@ -201,7 +201,7 @@ a3ret a3proceduralInternalGenerateCylinder(a3_GeometryData *geomData, const a3_P
 		}
 
 		// normals
-		if (flags & a3geomFlag_normals)
+		if ((a3i32)flags & a3geomFlag_normals)
 		{
 			// normals are easy: normalize the position
 			// ...but we need the length; hard-code the first 
@@ -254,7 +254,7 @@ a3ret a3proceduralInternalGenerateCylinder(a3_GeometryData *geomData, const a3_P
 
 			geomData->attribData[a3attrib_geomNormal] = normals;
 
-			if (flags & a3geomFlag_tangentFlag)
+			if ((a3i32)flags & a3geomFlag_tangentFlag)
 			{
 				attribItr = tangents + baseVertsOffset;
 				// create body tangents once and copy to all stacks

@@ -458,23 +458,23 @@ a3ret a3proceduralInternalGenerateCircle(a3_GeometryData *geomData, const a3_Pro
 	if (isSolid)
 	{
 		// using algorithm
-		a3proceduralInternalCircleGenerateAlgorithm(positions, (flags & a3geomFlag_texcoords ? texcoords : 0), (flags & a3geomFlag_normals ? normals : 0), (flags & a3geomFlag_tangentFlag ? tangents : 0), (flags & a3geomFlag_tangentFlag ? bitangents : 0),
+		a3proceduralInternalCircleGenerateAlgorithm(positions, ((a3i32)flags & a3geomFlag_texcoords ? texcoords : 0), ((a3i32)flags & a3geomFlag_normals ? normals : 0), ((a3i32)flags & a3geomFlag_tangentFlag ? tangents : 0), ((a3i32)flags & a3geomFlag_tangentFlag ? bitangents : 0),
 			indices, radius, slices, subdivsBase, 0.0f, 0.0f, 0.0f, 0.5f, 0.5f, 0.5f, numVertices, numIndices, indexSize, 0, isSolid, 0);
 
 		a3proceduralInternalTransformVectors(positions, numVertices, axis);
 
-		if (flags & a3geomFlag_texcoords)
+		if ((a3i32)flags & a3geomFlag_texcoords)
 		{
 			geomData->attribData[a3attrib_geomTexcoord] = texcoords;
 		}
 
-		if (flags & a3geomFlag_normals)
+		if ((a3i32)flags & a3geomFlag_normals)
 		{
 			geomData->attribData[a3attrib_geomNormal] = normals;
 
 			a3proceduralInternalTransformVectors(normals, numVertices, axis);
 
-			if (flags & a3geomFlag_tangentFlag)
+			if ((a3i32)flags & a3geomFlag_tangentFlag)
 			{
 				geomData->attribData[a3attrib_geomTangent] = tangents;
 
@@ -488,7 +488,7 @@ a3ret a3proceduralInternalGenerateCircle(a3_GeometryData *geomData, const a3_Pro
 		if (subdivsBase > 1)
 		{
 			// using algo
-			a3proceduralInternalCircleGenerateAlgorithm(positions, (flags & a3geomFlag_texcoords ? texcoords : 0), (flags & a3geomFlag_normals ? normals : 0), (flags & a3geomFlag_tangentFlag ? tangents : 0), (flags & a3geomFlag_tangentFlag ? bitangents : 0),
+			a3proceduralInternalCircleGenerateAlgorithm(positions, ((a3i32)flags & a3geomFlag_texcoords ? texcoords : 0), ((a3i32)flags & a3geomFlag_normals ? normals : 0), ((a3i32)flags & a3geomFlag_tangentFlag ? tangents : 0), ((a3i32)flags & a3geomFlag_tangentFlag ? bitangents : 0),
 				indices, radius, slices, subdivsBase, 0.0f, 0.0f, 0.0f, 0.5f, 0.5f, 0.5f, numVertices, numIndices, indexSize, 0, isSolid, 0);
 		}
 		else

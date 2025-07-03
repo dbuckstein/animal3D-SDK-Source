@@ -142,10 +142,10 @@ a3ret a3proceduralInternalGenerateSemisphere(a3_GeometryData *geomData, const a3
 		// base: using algorithm
 		a3proceduralInternalCircleGenerateAlgorithm(
 			positions,
-			(flags & a3geomFlag_texcoords ? texcoords : 0),
-			(flags & a3geomFlag_normals ? normals : 0),
-			(flags & a3geomFlag_tangentFlag ? tangents : 0),
-			(flags & a3geomFlag_tangentFlag ? bitangents : 0),
+			((a3i32)flags & a3geomFlag_texcoords ? texcoords : 0),
+			((a3i32)flags & a3geomFlag_normals ? normals : 0),
+			((a3i32)flags & a3geomFlag_tangentFlag ? tangents : 0),
+			((a3i32)flags & a3geomFlag_tangentFlag ? bitangents : 0),
 			indices,
 			radius, slices, subdivsBase, 0.0f, 0.0f, 0.0f, 0.75f, 0.25f, 0.25f, baseVerts, baseInds, indexSize, 0, isSolid, 1
 		);
@@ -184,7 +184,7 @@ a3ret a3proceduralInternalGenerateSemisphere(a3_GeometryData *geomData, const a3
 
 
 		// texcoords
-		if (flags & a3geomFlag_texcoords)
+		if ((a3i32)flags & a3geomFlag_texcoords)
 		{
 			// body: grid, starting halfway up in texture space
 			// need to divide half of texture space evenly
@@ -203,7 +203,7 @@ a3ret a3proceduralInternalGenerateSemisphere(a3_GeometryData *geomData, const a3
 			geomData->attribData[a3attrib_geomTexcoord] = texcoords;
 		}
 
-		if (flags & a3geomFlag_normals)
+		if ((a3i32)flags & a3geomFlag_normals)
 		{
 			// normals are easy: normalize the position
 			// ...but we need the length; hard-code the first 
@@ -253,7 +253,7 @@ a3ret a3proceduralInternalGenerateSemisphere(a3_GeometryData *geomData, const a3
 
 			geomData->attribData[a3attrib_geomNormal] = normals;
 
-			if (flags & a3geomFlag_tangentFlag)
+			if ((a3i32)flags & a3geomFlag_tangentFlag)
 			{
 				attribItr = tangents + baseVertsOffset;
 				// create body tangents once and copy to all stacks

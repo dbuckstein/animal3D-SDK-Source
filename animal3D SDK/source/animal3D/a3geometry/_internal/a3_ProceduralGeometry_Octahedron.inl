@@ -148,7 +148,7 @@ a3ret a3proceduralInternalGenerateOctahedron(a3_GeometryData *geomData, const a3
 			// (NOT INDEXED)
 
 			// texture coordinates
-			if (flags & a3geomFlag_texcoords)
+			if ((a3i32)flags & a3geomFlag_texcoords)
 			{
 				const a3f32 texcoordsLocal[] = {
 					// arrangement is diamond shape
@@ -199,7 +199,7 @@ a3ret a3proceduralInternalGenerateOctahedron(a3_GeometryData *geomData, const a3
 			}
 
 			// normals
-			if (flags & a3geomFlag_normals)
+			if ((a3i32)flags & a3geomFlag_normals)
 			{
 				a3f32 *normalsPtr = normals;
 				for (i = 0, nPtr = n; i < numFaces; ++i, nPtr += vElems)
@@ -217,7 +217,7 @@ a3ret a3proceduralInternalGenerateOctahedron(a3_GeometryData *geomData, const a3
 				geomData->attribData[a3attrib_geomNormal] = normals;
 
 				// tangents and bitangents, same algorithm as above
-				if (flags & a3geomFlag_tangentFlag)
+				if ((a3i32)flags & a3geomFlag_tangentFlag)
 				{
 					a3f32 *tangentsPtr = tangents, *bitangentsPtr = bitangents;
 					for (i = 0, tPtr = t, bPtr = b; i < numFaces; ++i, tPtr += vElems, bPtr += vElems)

@@ -278,7 +278,7 @@ a3ret a3proceduralInternalGenerateAxes(a3_GeometryData *geomData, const a3_Proce
 
 
 		// texture coordinates
-		if (flags & a3geomFlag_texcoords)
+		if ((a3i32)flags & a3geomFlag_texcoords)
 		{
 			const a3f32 texcoordsLocal[] = {
 				// arrangement is 3x diamond shapes
@@ -329,7 +329,7 @@ a3ret a3proceduralInternalGenerateAxes(a3_GeometryData *geomData, const a3_Proce
 		}
 
 		// normals
-		if (flags & a3geomFlag_normals)
+		if ((a3i32)flags & a3geomFlag_normals)
 		{
 			// normals by vertex
 			const a3f32 normalsLocal[] = {
@@ -384,7 +384,7 @@ a3ret a3proceduralInternalGenerateAxes(a3_GeometryData *geomData, const a3_Proce
 			a3proceduralInternalTransformVectors(normals + 96, 2, a3geomAxis_y);
 
 			// tangents and bitangents, same algorithm as above
-			if (flags & a3geomFlag_tangentFlag)
+			if ((a3i32)flags & a3geomFlag_tangentFlag)
 			{
 				// tangents: by vertex
 				const a3f32 tangentsLocal[] = {

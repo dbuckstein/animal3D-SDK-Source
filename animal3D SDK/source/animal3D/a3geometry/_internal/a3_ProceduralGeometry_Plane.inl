@@ -376,7 +376,7 @@ a3ret a3proceduralInternalGeneratePlane(a3_GeometryData *geomData, const a3_Proc
 		//	a3proceduralInternalTransformVectors(normals, numVertices, axis);
 
 			// create and transform tangents and bitangents
-			if (flags & a3geomFlag_tangentFlag)
+			if ((a3i32)flags & a3geomFlag_tangentFlag)
 			{
 				// copy tangent and bitangent
 				a3f32 *attribItr2 = bitangents;

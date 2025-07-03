@@ -171,7 +171,7 @@ a3ret a3proceduralInternalGenerateSphere(a3_GeometryData *geomData, const a3_Pro
 
 
 		// create texture coordinates (DO NOT TRANSFORM)
-		if (flags & a3geomFlag_texcoords)
+		if ((a3i32)flags & a3geomFlag_texcoords)
 		{
 			// body: grid, starting one row up in texture space
 			// need to divide half of texture space evenly
@@ -197,7 +197,7 @@ a3ret a3proceduralInternalGenerateSphere(a3_GeometryData *geomData, const a3_Pro
 
 
 		// create normals
-		if (flags & a3geomFlag_normals)
+		if ((a3i32)flags & a3geomFlag_normals)
 		{
 			// normals are easy: normalize the position
 			// ...but we need the length; hard-code the first 
@@ -247,7 +247,7 @@ a3ret a3proceduralInternalGenerateSphere(a3_GeometryData *geomData, const a3_Pro
 			geomData->attribData[a3attrib_geomNormal] = normals;
 
 			// create tangents and bitangents
-			if (flags & a3geomFlag_tangentFlag)
+			if ((a3i32)flags & a3geomFlag_tangentFlag)
 			{
 				attribItr = tangents;
 				// create body tangents once and copy to all stacks

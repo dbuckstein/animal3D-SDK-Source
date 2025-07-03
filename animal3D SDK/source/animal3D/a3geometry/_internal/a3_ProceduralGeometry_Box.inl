@@ -197,7 +197,7 @@ a3ret a3proceduralInternalGenerateBox(a3_GeometryData *geomData, const a3_Proced
 		assert(valid = indexItr == indexDataEnd);
 
 		// create texture coordinates (DO NOT TRANSFORM)
-		if (flags & a3geomFlag_texcoords)
+		if ((a3i32)flags & a3geomFlag_texcoords)
 		{
 			// upside down T shape
 			attribItr = texcoords;
@@ -226,7 +226,7 @@ a3ret a3proceduralInternalGenerateBox(a3_GeometryData *geomData, const a3_Proced
 		}
 
 		// create normals
-		if (flags & a3geomFlag_normals)
+		if ((a3i32)flags & a3geomFlag_normals)
 		{
 			// the whole thing is a copy of the Z axis
 			attribItr = normals;
@@ -243,7 +243,7 @@ a3ret a3proceduralInternalGenerateBox(a3_GeometryData *geomData, const a3_Proced
 			geomData->attribData[a3attrib_geomNormal] = normals;
 
 			// create tangents and bitangents
-			if (flags & a3geomFlag_tangentFlag)
+			if ((a3i32)flags & a3geomFlag_tangentFlag)
 			{
 				// copy tangent and bitangent
 				attribItr = tangents;
