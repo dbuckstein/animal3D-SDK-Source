@@ -1,5 +1,5 @@
 /*
-	Copyright 2011-2021 Daniel S. Buckstein
+	Copyright 2011-2026 Daniel S. Buckstein
 
 	Licensed under the Apache License, Version 2.0 (the "License");
 	you may not use this file except in compliance with the License.
@@ -311,9 +311,7 @@ struct a3_DemoState
 	};
 
 
-	// ****TO-DO:
-	//	-> uncomment framebuffers
-/*	// framebuffers
+	// framebuffers
 	union {
 		a3_Framebuffer framebuffer[demoStateMaxCount_framebuffer];
 		struct {
@@ -326,7 +324,7 @@ struct a3_DemoState
 				fbo_d32[1],				// 32-bit depth buffer
 				fbo_c16x4_d24s8[1];		// 16-bit color buffer (4 targets) and depth-stencil buffer (24/8)
 		};
-	};*/
+	};
 
 
 	// managed objects, no touchie

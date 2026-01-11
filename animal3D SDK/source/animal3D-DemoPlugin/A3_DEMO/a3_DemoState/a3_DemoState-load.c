@@ -1,5 +1,5 @@
 /*
-	Copyright 2011-2021 Daniel S. Buckstein
+	Copyright 2011-2026 Daniel S. Buckstein
 
 	Licensed under the Apache License, Version 2.0 (the "License");
 	you may not use this file except in compliance with the License.
@@ -581,7 +581,7 @@ void a3demo_loadShaders(a3_DemoState *demoState)
 	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.passthru_stereo_gs->shader);
 	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.drawPhong_fs->shader);
 
-/*	// tangent basis
+	// tangent basis
 	currentDemoProg = demoState->prog_drawTangentBasis;
 	a3shaderProgramCreate(currentDemoProg->program, "prog:draw-tb");
 	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.passTangentBasis_transform_vs->shader);
@@ -593,7 +593,7 @@ void a3demo_loadShaders(a3_DemoState *demoState)
 	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.passTangentBasis_transform_instanced_vs->shader);
 	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.drawTangentBasis_gs->shader);
 	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.drawColorAttrib_fs->shader);
-*/
+
 /*	// 01-pipeline programs: 
 	// Phong shading with shadow mapping
 	currentDemoProg = demoState->prog_drawPhong_shadow;
@@ -842,8 +842,8 @@ void a3demo_loadTextures(a3_DemoState* demoState)
 void a3demo_loadFramebuffers(a3_DemoState* demoState)
 {
 	// create framebuffers and change their texture settings if need be
-	//a3_Framebuffer* fbo;
-	//a3ui32 i, j;
+	a3_Framebuffer* fbo;
+	a3ui32 i, j;
 
 	// frame sizes
 	const a3ui16 frameWidth1 = demoState->frameWidth, frameHeight1 = demoState->frameHeight;
@@ -862,7 +862,6 @@ void a3demo_loadFramebuffers(a3_DemoState* demoState)
 
 
 	// ****TO-DO:
-	//	-> uncomment framebuffer initialization
 	//	-> initialize all framebuffers
 	//		(hint: their names describe their features)
 	//		-> main MRT-color/depth/stencil combo (provided)
@@ -870,17 +869,15 @@ void a3demo_loadFramebuffers(a3_DemoState* demoState)
 	//		-> depth only
 	//		-> set of full-size MRT-color only
 	//		-> set of half/quarter/eighth-size color only
-/*	// initialize framebuffers: MRT, color and depth formats, size
+	// initialize framebuffers: MRT, color and depth formats, size
 	fbo = demoState->fbo_c16x4_d24s8;
 	a3framebufferCreate(fbo, "fbo:c16x4;d24s8",
 		4, a3fbo_colorRGBA16, a3fbo_depth24_stencil8,
 		frameWidth1, frameHeight1);
-	//...*/
+	//...
 
 
-	// ****TO-DO:
-	//	-> uncomment global framebuffer configuration
-/*	// change texture settings for all framebuffers
+	// change texture settings for all framebuffers
 	for (i = 0, fbo = demoState->framebuffer;
 		i < demoStateMaxCount_framebuffer;
 		++i, ++fbo)
@@ -900,7 +897,7 @@ void a3demo_loadFramebuffers(a3_DemoState* demoState)
 			a3textureChangeRepeatMode(a3tex_repeatClamp, a3tex_repeatClamp);
 			a3textureChangeFilterMode(a3tex_filterLinear);
 		}
-	}*/
+	}
 
 
 	// deactivate texture
@@ -935,10 +932,8 @@ void a3demo_loadValidate(a3_DemoState* demoState)
 		* const endUBO = currentUBO + demoStateMaxCount_uniformBuffer;
 	a3_Texture* currentTex = demoState->texture,
 		* const endTex = currentTex + demoStateMaxCount_texture;
-	// ****TO-DO:
-	//	-> uncomment framebuffer pointers
-/*	a3_Framebuffer* currentFBO = demoState->framebuffer,
-		* const endFBO = currentFBO + demoStateMaxCount_framebuffer;*/
+	a3_Framebuffer* currentFBO = demoState->framebuffer,
+		* const endFBO = currentFBO + demoStateMaxCount_framebuffer;
 
 	// set pointers to appropriate release callback for different asset types
 	while (currentBuff < endBuff)
@@ -951,10 +946,8 @@ void a3demo_loadValidate(a3_DemoState* demoState)
 		a3bufferHandleUpdateReleaseCallback(currentUBO++);
 	while (currentTex < endTex)
 		a3textureHandleUpdateReleaseCallback(currentTex++);
-	// ****TO-DO:
-	//	-> uncomment framebuffer update
-/*	while (currentFBO < endFBO)
-		a3framebufferHandleUpdateReleaseCallback(currentFBO++);*/
+	while (currentFBO < endFBO)
+		a3framebufferHandleUpdateReleaseCallback(currentFBO++);
 
 	// re-link specific object pointers for different asset types
 	currentBuff = demoState->vbo_staticSceneObjectDrawBuffer;
