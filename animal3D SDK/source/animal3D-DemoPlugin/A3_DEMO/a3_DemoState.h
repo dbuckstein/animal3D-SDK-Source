@@ -311,9 +311,7 @@ struct a3_DemoState
 	};
 
 
-	// ****TO-DO:
-	//	-> uncomment framebuffers
-/*	// framebuffers
+	// framebuffers
 	union {
 		a3_Framebuffer framebuffer[demoStateMaxCount_framebuffer];
 		struct {
@@ -326,7 +324,7 @@ struct a3_DemoState
 				fbo_d32[1],				// 32-bit depth buffer
 				fbo_c16x4_d24s8[1];		// 16-bit color buffer (4 targets) and depth-stencil buffer (24/8)
 		};
-	};*/
+	};
 
 
 	// managed objects, no touchie
